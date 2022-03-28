@@ -27,9 +27,6 @@
 # Calculo pra chegar no offset:
 #	x = (largura da tela - char width) / 2
 #	y = (altura da tela - char height) / 2
-# Com MAP_OFFSET_Y = -78 o personagem fica no meio,
-# mas acredito que o personagem deveria ficar um pouco mais abaixo da linha do meio,
-# por isso coloquei -120.
-#
-.eqv MAP_OFFSET_X		-144
-.eqv MAP_OFFSET_Y		-130
+
+#.eqv MAP_OFFSET_X		?
+#.eqv MAP_OFFSET_Y		?

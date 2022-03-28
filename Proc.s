@@ -46,7 +46,6 @@ PRINT_MAP:
 		
 		lhu		a3, 0(a3)
 		lhu		a4, 0(a4)
-		
 		# t0 = offset na imagem
 		# s5 = offset na tela
 		# t1 = endereço final da tela
