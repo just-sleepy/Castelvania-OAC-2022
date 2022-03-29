@@ -1,5 +1,5 @@
 # Endereço do Bitmap Display
-# (ja foi somado +30 na linha pra compensar a altura da tela que nao e 240)
+
 .eqv F0_INIT_ADDR		0xff002580
 .eqv F1_INIT_ADDR		0xff102580
 .eqv FRAME_CONTROL_ADDRESS	0xFF200604
@@ -19,8 +19,8 @@
 .eqv MAPA_HEIGHT		979
 
 # Tamanho do personagem (char.bin)
-.eqv CHAR_WIDTH			32
-.eqv CHAR_HEIGHT		32
+.eqv PLAYER_WIDTH		32
+.eqv PLAYER_HEIGHT		324334
 
 #
 # Offset do mapa em relação ao personagem
@@ -28,5 +28,5 @@
 #	x = (largura da tela - char width) / 2
 #	y = (altura da tela - char height) / 2
 
-#.eqv MAP_OFFSET_X		?
-#.eqv MAP_OFFSET_Y		?
+#.eqv OFFSET_X		?
+#.eqv OFFSET_Y		?
