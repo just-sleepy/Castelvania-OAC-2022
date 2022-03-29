@@ -86,4 +86,52 @@ PRINT.LOOP:	# salva a0 antes de fazer as syscalls
 
 
 
+#--------------------------------------------------------------------------------------------------------------------------------------------------------#
+################### PROCEDIMENTO PRINT_PLAYER ###################
+#	ARGUMENTOS:						#
+#		a0 = file map					#
+#		a1 = x na tela					#
+#		a2 = y na tela					#
+#		a3 = frame (0 ou 1)				#
+#								#
+#################################################################
+
+PRINT_PLAYER:
+#la t0, %data
+#li s0,%hexf0 
+
+#li s1, %pula
+
+
+    lw t1, 0(a0)         #x(linhas)
+    lw t2, 4(a0)         #y(colunas)
+    lw t6, 0(a0)       	 #armazena o n de linhas da imagem para incrementar em t1 sem ser alterado
+    mul t3, t1, t2       #numero total de pixels
+    addi a0, a0, 8       #Primeiro pixel
+    li t4, 0        	 #contador
+    
+    # Calculo frame
+		li		t1, 0xFF0		# t1 = 0xFF0
+		add		a3, a3, t1		# frame = 0xFF0 + frame
+		slli		a3, a3, 16		# frame << 16
+		slli		a3, a3, 4		# frame << 4		
+    
+IMPRIME_F0:
+    beq t4, t3, Impressaopequena_FIM       #quando finalizar, pula para a fun?o desejada
+    lb t5, 0(a0)
+    sb t5, 0(s0)
+    addi a0, a0, 1
+    addi s0, s0, 1    
+    addi t4, t4, 1
+    beq t4, t6, PULA_F0        #quando chegar ao final de uma linha, pula para a seguinte    
+    j     IMPRIME_F0
+    
+    PULA_F0:
+    add t6, t6, t1            #incrementa o numero de pixels impressos pelo n de linhas para o proximo beq ainda pular linha.
+    add s0, s0, s1
+    j IMPRIME_F0    
+    
+Impressaopequena_FIM:
+	jr s5		#volta pra s5
+
 

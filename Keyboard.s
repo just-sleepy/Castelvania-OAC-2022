@@ -1,5 +1,5 @@
 KEY:		
-		li 	t1, KDMMIO_KEYDOWN_ADDRESS	# carrega o endere?o de controle do KDMMIO
+		li 	t1, KDMMIO	# carrega o endere?o de controle do KDMMIO
 		lw 	t0,0(t1)			# Le bit de Controle Teclado
 		andi 	t0,t0,0x0001		# mascara o bit menos significativo
   	 	beqz	t0, KEY_END	# se nao tiver tecla pressionada, vai para o fim
@@ -17,21 +17,29 @@ KEY:
   		li		t1, 'd'
 		beq		t0, t1, KEY_D
 		
-		
-KEY_W:			
+#se soma valores que apos o call Key serao somados na posicao do personagem(movimentacao em pixels) sem fisica de velocidade inclusa
+#a0 = x
+#a1 = y		
+						
+KEY_W:		li a0, 0
+		li a1, -12	
 		ret
 
-KEY_A:		
+KEY_A:		li a0, -12
+		li a1, 0
 		ret
 
-KEY_S:		
+KEY_S:		li a0, 0
+		li a1, 12
 		ret
 
-KEY_D:		
+KEY_D:		li a0, 12
+		li a1, 0
 		ret		
 		
 		
 		
 		
-KEY_END:	
+KEY_END:	li a0, 0
+		li a1, 0
 		ret		

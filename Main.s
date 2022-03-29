@@ -1,8 +1,11 @@
 .include "val.s"
 
+#imagens
+.include "./Imagens/Ritcher_Stand0.data"
+
 .data 
 
-PLAYER_POS:	.half 450, 725	# posicao atual do player
+PLAYER_POS:	.half 450, 425	# posicao atual do player
 
 
 
@@ -45,8 +48,16 @@ MAIN:
 			#flw		fs0, 0(t0)		# fs0 = char x
 
 MAIN_LOOP:		call 	KEY	#verifica teclado
-			j MAP_POS
-
+			#Soma as posicoes novas da KEY
+			la t0, PLAYER_POS
+			lh t1, 0(t0)			#x
+			add t1, t1, a0
+			sh t1, 0(t0)
+			
+			lh t1, 2(t0)			#y
+			add t1, t1, a1
+			sh t1, 2(t0)
+			
 #calcular a camera do jogador como visao do mapa levando em conta 
 #a posicao central do jogador
 
@@ -54,29 +65,35 @@ VERIFY_MAP_POS:
 			#Determinar x
 			la t0, PLAYER_POS
 			lh t1, 0(t0)			#x
-			#addi	t1, t1, OFFSET_X	# a0 = char x - offset x do mapa (o mapa fica x pixels pra esquerda do personagem)
-			bge t1, zero, VERIFY_MAP_POS_JUMP #t1 > 0
+			addi	t1, t1, OFFSET_X	# a0 = char x - offset x do mapa (o mapa fica x pixels pra esquerda do personagem)
+			bge t1, zero,VERIFY_MAP_POS_JUMP #t1 > 0
 			mv t1, zero			#senao t1 = 0
 		VERIFY_MAP_POS_JUMP:
-			#li	a1, MAP_MAX_X		# a1 = maximo que o mapa pode ir no eixo X
-			#call	MIN			# faz um MIN entre o resultado da conta e o MAXIMO que o mapa pode ir no eixo X
-
+			la t0, FILE_MAP_SIZE
+			lh t2, 0(t0)
+			addi t2, t2, -320		#largura maxima de x = largura do mapa - largura da tela
+			bge t2,t1, VERIFY_MAP_POS_JUMP2	#pega o menor entre os valores
+			mv t1, t2
+		VERIFY_MAP_POS_JUMP2:
 			mv	s3, t1			# move o resultado pra s3
 
 			#Determinar y
 			la t0, PLAYER_POS
 			lh t1, 2(t0)			#y
-			#addi	t1, t1, OFFSET_X	# a0 = char x - offset x do mapa (o mapa fica x pixels pra esquerda do personagem)
-			bge t1, zero, VERIFY_MAP_POS_JUMP #t1 > 0
+			addi t1, t1, OFFSET_X		# a0 = char x - offset x do mapa (o mapa fica x pixels pra esquerda do personagem)
+			bge t1, zero, VERIFY_MAP_POS_JUMP3 #t1 > 0
 			mv t1, zero			#senao t1 = 0
-		VERIFY_MAP_POS_JUMP2:
-			#li	a1, MAP_MAX_X		# a1 = maximo que o mapa pode ir no eixo X
-			#call	MIN			# faz um MIN entre o resultado da conta e o MAXIMO que o mapa pode ir no eixo X
-
+		VERIFY_MAP_POS_JUMP3:
+			la t0, FILE_MAP_SIZE
+			lh t2, 0(t0)
+			addi t2, t2, -320		#largura maxima de x = largura do mapa - largura da tela
+			bge t2,t1, VERIFY_MAP_POS_JUMP4	#pega o menor entre os valores
+			mv t1, t2
+		VERIFY_MAP_POS_JUMP4:
 			mv	s4, t1			# move o resultado pra s4
 			
 			
-			#j	MAP_PRINT
+			j	MAP_PRINT
 
 
 

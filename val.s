@@ -5,8 +5,8 @@
 .eqv FRAME_CONTROL_ADDRESS	0xFF200604
 
 # KDMMIO
-.eqv KDMMIO_CONTROL_ADDRESS	0xFF200000
-.eqv KDMMIO_KEYDOWN_ADDRESS	0xFF210000
+.eqv KDMMIO			0xFF200000
+
 
 # Largura e altura da tela
 .eqv SCREEN_WIDTH		320
@@ -19,8 +19,8 @@
 .eqv MAPA_HEIGHT		979
 
 # Tamanho do personagem (char.bin)
-.eqv PLAYER_WIDTH		32
-.eqv PLAYER_HEIGHT		324334
+.eqv PLAYER_WIDTH		24
+.eqv PLAYER_HEIGHT		48
 
 #
 # Offset do mapa em relação ao personagem
@@ -28,5 +28,5 @@
 #	x = (largura da tela - char width) / 2
 #	y = (altura da tela - char height) / 2
 
-#.eqv OFFSET_X		?
-#.eqv OFFSET_Y		?
+.eqv OFFSET_X		-148
+.eqv OFFSET_Y		-96
