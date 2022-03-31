@@ -1,32 +1,22 @@
 .include "val.s"
 
-#imagens
-.include "./Imagens/Ritcher_Stand0.data"
+
 
 .data 
 
-PLAYER_POS:	.half 450, 425	# posicao atual do player
-
+PLAYER_POS:	.half 500, 600	# posicao atual do player
+PLAYER_SIZE:	.half 24, 48	#tamanho do Ritcher
 
 
 Map_library:		.string "./Imagens/Map_library.bin"
 
 #Area do mapa e da tela
 SCREEN_SIZE:		.half 320, 240
-FILE_MAP_SIZE:		.half 1284, 979		#sempre fazer x += 1(não sei o porque)
+FILE_MAP_SIZE:		.half 4360, 1418	#sempre fazer x += 1(não sei o porque)
 
 #CHAR_POS:	.float 704, 648
 
 #RESPAWN_POS:	.half 704, 648	# respawn pos (x, y)
-
-
-
-
-
-
-
-
-
 
 
 
@@ -43,11 +33,20 @@ MAIN:
 			li	a1, 0
 			ecall
 			mv	s0, a0
+			csrr		s11, 3073	#tempo do primeiro frame
+			li		s1, 0		#FRAME inicial
+			
+			call SWITCH_FRAME
+
+MAIN_LOOP:		# O framerate de 60 fps
+			#Se for 60 FPS, por exemplo, 1 segundo / 60 = 0.01666, ou 16 ms#
+			csrr		t0, 3073		# t0 = tempo atual
+			sub		t0, s11, t0		# t0 = tempo atual - ultimo frame
+			li		t1, 16			# 16ms 
+			bltu		t0, t1, MAIN_LOOP	
 
 
-			#flw		fs0, 0(t0)		# fs0 = char x
-
-MAIN_LOOP:		call 	KEY	#verifica teclado
+			call 	KEY	#verifica teclado
 			#Soma as posicoes novas da KEY
 			la t0, PLAYER_POS
 			lh t1, 0(t0)			#x
@@ -85,8 +84,8 @@ VERIFY_MAP_POS:
 			mv t1, zero			#senao t1 = 0
 		VERIFY_MAP_POS_JUMP3:
 			la t0, FILE_MAP_SIZE
-			lh t2, 0(t0)
-			addi t2, t2, -320		#largura maxima de x = largura do mapa - largura da tela
+			lh t2, 2(t0)
+			addi t2, t2, -240		#largura maxima de y = largura do mapa - largura da tela
 			bge t2,t1, VERIFY_MAP_POS_JUMP4	#pega o menor entre os valores
 			mv t1, t2
 		VERIFY_MAP_POS_JUMP4:
@@ -104,7 +103,6 @@ MAP_POS:		la	t0, PLAYER_POS
 			lhu	s4, 2(t0)									
 			
 MAP_PRINT:		
-			li		s1, 0
 			# Define os argumentos a0-a5 e desenha o mapa
 			# os calculos pros argumentos a6-a7 s?o definidos acima
 			mv	a0, s0
@@ -115,10 +113,48 @@ MAP_PRINT:
 			mv	a5, s1
 			mv	a6, s3
 			mv	a7, s4
-			call	PRINT_MAP			
-			
+			call	PRINT			
 
+PLAYER_PRINT:		
+			mv	a0, s0
+			# Calculo da posicao do personagem na tela em relacao ao mapa
+			# x = player x - map x
+			la 	t0, PLAYER_POS
+			lh 	a1,0(t0)
+			sub	a1, a1, s3
+		
+			# x = player x - map x
+			la 	t0, PLAYER_POS
+			lh 	a2,2(t0)
+			sub	a2, a2, s4
+
+			
+			la	a3, PLAYER_SIZE
+			la	a4, PLAYER_SIZE
+			mv	a5, s1
+			li 	a6, 0
+			li	a7, 0
+			call	PRINT	
+						
+												
+						
+#FIM_MAIN_LOOP		
+call SWITCH_FRAME		#mostra a nova tela	
+beq s1, zero,FRAME_1
+li s1, 0
+j FRAME_0
+FRAME_1:								
+li s1, 1
+FRAME_0:																											
+																																																																																	
+csrr		s11, 3073	#tempo do primeiro frame
 j MAIN_LOOP
+
+
+
+
+
+
 # Registradores que devem permanecer inalterados
 #
 # s0 = Map
@@ -135,4 +171,6 @@ ecall
 .include "Proc.s"	
 .include "Keyboard.s"
 
-
+.data
+#imagens
+.include "./Imagens/Ritcher_Stand0.data"

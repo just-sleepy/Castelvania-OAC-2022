@@ -19,7 +19,7 @@
 #		a7 = y na imagem				#
 #################################################################
 
-PRINT_MAP:	
+PRINT:	
 		lhu		t1, 0(a3)
 
 		# Calculo do offset na imagem
@@ -135,3 +135,12 @@ Impressaopequena_FIM:
 	jr s5		#volta pra s5
 
 
+################### Troca_Frame #################################
+#								#
+#################################################################
+SWITCH_FRAME:
+li a5, 0xFF200604	#Carrega o endere?o respons¨¢vel pela troca de frame
+lw t1, 0(a5)		#Carrega-o em t1 para manipular
+xori t1, t1, 0x001 	#Inverte o valor atual
+sw t1, 0(a5)		#Armazena de volta em a5 o valor invertido
+ret
