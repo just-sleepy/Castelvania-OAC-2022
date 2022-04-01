@@ -30,3 +30,30 @@
 
 .eqv OFFSET_X		-148
 .eqv OFFSET_Y		-96
+
+
+
+.data
+#MAPAS:
+BACKGROUND:			.byte 1		#(1 para que tem background e 0 que nao tem)
+
+#Ritcher
+Ritcher:			.string 		"./Imagens/Ritcher.bin"
+Ritcher_size:			.half 476, 896	#sempre fazer x += 1(não sei o porque)
+
+#Library
+Map_library:			.string 		"./Imagens/Map_library.bin"
+FILE_MAP_SIZE:			.half 4356, 1744	#sempre fazer x += 1(não sei o porque)
+
+#PARTE1
+Backgorund_library_size: 	.half 256, 352
+POS_Backgorund_library:		.half 1215, 1053
+
+P1_library_size:		.half 1280, 975
+POS_P1_library:		.half 113, 48
+
+
+
+#Area do mapa e da tela
+SCREEN_SIZE:		.half 320, 240
+

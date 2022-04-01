@@ -22,18 +22,18 @@ KEY:
 #a1 = y		
 						
 KEY_W:		li a0, 0
-		li a1, -12	
+		li a1, -8	
 		ret
 
-KEY_A:		li a0, -12
+KEY_A:		li a0, -8
 		li a1, 0
 		ret
 
 KEY_S:		li a0, 0
-		li a1, 12
+		li a1, 8
 		ret
 
-KEY_D:		li a0, 12
+KEY_D:		li a0, 8
 		li a1, 0
 		ret		
 		
