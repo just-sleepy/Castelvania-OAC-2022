@@ -86,54 +86,6 @@ PRINT.LOOP:	# salva a0 antes de fazer as syscalls
 
 
 
-#--------------------------------------------------------------------------------------------------------------------------------------------------------#
-################### PROCEDIMENTO PRINT_PLAYER ###################
-#	ARGUMENTOS:						#
-#		a0 = file map					#
-#		a1 = x na tela					#
-#		a2 = y na tela					#
-#		a3 = frame (0 ou 1)				#
-#								#
-#################################################################
-
-PRINT_PLAYER:
-#la t0, %data
-#li s0,%hexf0 
-
-#li s1, %pula
-
-
-    lw t1, 0(a0)         #x(linhas)
-    lw t2, 4(a0)         #y(colunas)
-    lw t6, 0(a0)       	 #armazena o n de linhas da imagem para incrementar em t1 sem ser alterado
-    mul t3, t1, t2       #numero total de pixels
-    addi a0, a0, 8       #Primeiro pixel
-    li t4, 0        	 #contador
-    
-    # Calculo frame
-		li		t1, 0xFF0		# t1 = 0xFF0
-		add		a3, a3, t1		# frame = 0xFF0 + frame
-		slli		a3, a3, 16		# frame << 16
-		slli		a3, a3, 4		# frame << 4		
-    
-IMPRIME_F0:
-    beq t4, t3, Impressaopequena_FIM       #quando finalizar, pula para a fun?o desejada
-    lb t5, 0(a0)
-    sb t5, 0(s0)
-    addi a0, a0, 1
-    addi s0, s0, 1    
-    addi t4, t4, 1
-    beq t4, t6, PULA_F0        #quando chegar ao final de uma linha, pula para a seguinte    
-    j     IMPRIME_F0
-    
-    PULA_F0:
-    add t6, t6, t1            #incrementa o numero de pixels impressos pelo n de linhas para o proximo beq ainda pular linha.
-    add s0, s0, s1
-    j IMPRIME_F0    
-    
-Impressaopequena_FIM:
-	jr s5		#volta pra s5
-
 
 ################### Troca_Frame #################################
 #								#
@@ -144,3 +96,88 @@ lw t1, 0(a5)		#Carrega-o em t1 para manipular
 xori t1, t1, 0x001 	#Inverte o valor atual
 sw t1, 0(a5)		#Armazena de volta em a5 o valor invertido
 ret
+
+
+
+################### Select background #################################
+#	la a0 = setor size					#
+#	la a1 = setor posicao					#
+#	la a2 = background size					#
+#	la a3 = background posicao				#
+#	la a4 = Mapa do setor size				#
+#################################################################
+
+
+
+
+
+
+
+################### Background #################################
+#	la a0 = setor size					#
+#	la a1 = setor posicao					#
+#	la a2 = background size					#
+#	la a3 = background posicao				#
+#	la a4 = Mapa do setor size				#
+#################################################################
+PREPARE_BACKGROUND:
+#Verifica se tem background
+			la t0, BACKGROUND
+			lb t1, 0(t0)
+			beq t1, zero, OFF_BACKGROUND
+	
+		
+		#Calcular a6, a7 de acordo com pos do mapa
+			#X
+
+			lh t1, 0(a0)
+			lh t2, 0(a2)  
+			div t3, t1, t2   #valor x: de proporcao = (tamanho x do mapa / tamanho background x) + 1
+			addi t3, t3, 1	 #corretor de proporcao	
+			
+			lh t1, 0(a1)
+			sub t4, s3, t1	#posicao inicial do setor menos posicao atual no setor
+			
+			div a6, t4, t3	 #a6 = posicao x mapa / proporcao de x 
+			lh t1, 0(a3)
+			add a6, a6, t1	# soma da posicao inicial com a movimentacao dinamica
+			
+			#calcular se a camera na posicao dinamica n esta ultrapassando os limites do mapa
+			lh t1, 0(a4)
+			sub t2, t1, a6		#t2 = diferenca entre pos dinamica do background com o tamanho total		
+			li t0, 320			
+			bge t2, t0, J_BACKGROUND#se t2 < 320(linha abaixo)
+			addi t1, t1, -320
+			mv a6, t1
+			J_BACKGROUND:
+
+			
+			
+
+			#Y
+			lh t1, 2(a0)
+			lh t2, 2(a2)  
+			div t3, t1, t2	#valor y: de proporcao = valor y: de proporcao = (tamanho x do mapa / tamanho background x) + 1
+			addi t3, t3, 1
+			
+			lh t1, 2(a1)
+			sub t4, s4, t1	#posicao inicial do setor menos posicao atual no setor
+			
+			
+			div a7, t4, t3	#a7 = posicao x mapa / proporcao de y
+			lh t1, 2(a3)
+			add a7, a7, t1	# soma da posicao inicial com a movimentacao dinamica
+
+			#calcular se a camera na posicao dinamica n esta ultrapassando os limites do map
+			lh t1, 2(a4)
+			sub t2, t1, a7		#t2 = diferenca entre pos dinamica do background com o tamanho total		
+			li t0, 240			
+			bge t2, t0, J_BACKGROUND2#se t2 < 240(linha abaixo)
+			addi t1, t1, -240
+			mv a7, t1
+			J_BACKGROUND2:
+			#mudar valores para o print
+			mv a3, a4
+			mv a4, a2
+			
+			ret

@@ -35,7 +35,7 @@
 
 .data
 #MAPAS:
-BACKGROUND:			.byte 1		#(1 para que tem background e 0 que nao tem)
+BACKGROUND:			.byte 1	#(1 para que tem background e 0 que nao tem)
 
 #Ritcher
 Ritcher:			.string 		"./Imagens/Ritcher.bin"
