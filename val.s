@@ -46,11 +46,11 @@ Map_library:			.string 		"./Imagens/Map_library.bin"
 FILE_MAP_SIZE:			.half 4356, 1744	#sempre fazer x += 1(não sei o porque)
 
 #PARTE1
-Backgorund_library_size: 	.half 256, 352
-POS_Backgorund_library:		.half 1215, 1053
+Backgorund_library_size: 	.half  640, 485
+POS_Backgorund_library:		.half 1215, 1141
 
 P1_library_size:		.half 1280, 975
-POS_P1_library:		.half 113, 48
+POS_P1_library:			.half 113, 48
 
 
 

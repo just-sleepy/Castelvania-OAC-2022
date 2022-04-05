@@ -4,7 +4,7 @@
 
 .data 
 
-PLAYER_POS:	.half 500, 588	# posicao atual do player
+PLAYER_POS:	.half 380, 900	# posicao atual do player
 PLAYER_SIZE:	.half 25, 48	#tamanho do Ritcher
 
 
@@ -39,7 +39,9 @@ MAIN:
 			li		s1, 0		#FRAME inicial
 			
 			call SWITCH_FRAME
-
+			
+			
+			
 MAIN_LOOP:		# O framerate de 60 fps
 			#Se for 60 FPS, por exemplo, 1 segundo / 60 = 0.01666, ou 16 ms#
 			csrr		t0, 3073		# t0 = tempo atual
@@ -59,14 +61,6 @@ MAIN_LOOP:		# O framerate de 60 fps
 			add t1, t1, a1
 			sh t1, 2(t0)
 			
-
-
-
-
-
-
-
-
 
 
 
@@ -132,15 +126,87 @@ MAP_BACKGROUND:
 			lb t1, 0(t0)
 			beq t1, zero, OFF_BACKGROUND
 
+		#Calcular a1, a2 de acordo com pos do mapa	
+			#X
+			la t0, P1_library_size
+			lh t1, 0(t0)
+			li t2, 320
 			
+			fcvt.s.w ft1, t1		
+			fcvt.s.w ft2, t2
+			fdiv.s ft3, ft2, ft1, dyn		#valor x: de proporcao = (tamanho x da tela / tamanho do setor x)
+			la t0,POS_P1_library
+			lh t1, 0(t0)
+			sub t4, s3, t1				#t4 = posicao atual no setor
+			fcvt.s.w ft4, t4
+			fmul.s  ft1, ft3, ft4	 #ft1 = posicao x setor  * proporcao de x = posicao na tela
+			fcvt.w.s a1, ft1
+			
+			#calcular se o background n esta ultrapassando os limites da tela
+			la t0, Backgorund_library_size
+			lh t1, 0(t0)
+			add t2, t1, a1 			#poiscao na tela mais tamanho do background x
+			li t3, 319
+			bge t3, t2, JUMP_BACKGROUND	#se t3(320) < t2(linha abaixo)
+			add t3, t3, t1			#t3 = 320 - background x
+			mv a1, t3
+			JUMP_BACKGROUND:
+			
+			
+			#Y
+			la t0, P1_library_size
+			lh t1, 2(t0)
+			li t2, 240
+			
+			fcvt.s.w ft1, t1		
+			fcvt.s.w ft2, t2
+			fdiv.s ft3, ft2, ft1, dyn		#valor x: de proporcao = (tamanho x da tela / tamanho do setor x)
+			la t0,POS_P1_library
+			lh t1, 2(t0)
+			sub t4, s4, t1				#t4 = posicao atual no setor
+			fcvt.s.w ft4, t4
+			fmul.s  ft1, ft3, ft4	 #ft1 = posicao x setor  * proporcao de x = posicao na tela
+			fcvt.w.s a1, ft1
+			
+			#calcular se o background n esta ultrapassando os limites da tela
+			la t0, Backgorund_library_size
+			lh t1, 2(t0)
+			add t2, t1, a1 			#poiscao na tela mais tamanho do background x
+			li t3, 239
+			bge t3, t2, JUMP_BACKGROUND2	#se t3(320) < t2(linha abaixo)
+			add t3, t3, t1			#t3 = 320 - background x
+			mv a1, t3
+			JUMP_BACKGROUND2:
+			
+		
+			
+		
+			
+		
+		
+		
+		
+		
+		
+		
+		
+		#Calcular a6, a7 de acordo com pos do mapa
 			#X
 			la t0, P1_library_size
 			lh t1, 0(t0)
 			la t0, Backgorund_library_size
 			lh t2, 0(t0)  
-			div a0, t1, t2   #valor x: de proporcao = tamanho x do mapa / tamanho background x
-			div a6, s3, a0	 #a1 = posicao x mapa / proporcao de x /2
-			addi a6, a6, 1215
+			div t3, t1, t2   #valor x: de proporcao = (tamanho x do mapa / tamanho background x) + 1
+			addi t3, t3, 1	 #corretor de proporcao	
+			
+			la t0,POS_P1_library
+			lh t1, 0(t0)
+			sub t4, s3, t1	#posicao inicial do setor menos posicao atual no setor
+			
+			div a6, t4, t3	 #a6 = posicao x mapa / proporcao de x 
+			la t0, POS_Backgorund_library
+			lh t1, 0(t0)
+			add a6, a6, t1	# soma da posicao inicial com a movimentacao dinamica
 			
 			#calcular se a camera na posicao dinamica n esta ultrapassando os limites do mapa
 			la t0, FILE_MAP_SIZE
@@ -151,40 +217,61 @@ MAP_BACKGROUND:
 			addi t1, t1, -320
 			mv a6, t1
 			J_BACKGROUND:
-
+			la t0, Backgorund_library_size
+			lh t1, 0(t0)
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			#Y
 			la t0, P1_library_size
 			lh t1, 2(t0)
 			la t0, Backgorund_library_size
 			lh t2, 2(t0)  
-			div a0, t1, t2	#valor y: de proporcao = valor y: de proporcao = tamanho y do mapa / tamanho background x
-			div a7, s4, a0	#a2 = posicao x mapa / proporcao de y
+			div t3, t1, t2	#valor y: de proporcao = valor y: de proporcao = (tamanho x do mapa / tamanho background x) + 1
+			addi t3, t3, 1
+			
+			la t0,POS_P1_library
+			lh t1, 2(t0)
+			sub t4, s4, t1	#posicao inicial do setor menos posicao atual no setor
+			
+			
+			div a7, t4, t3	#a7 = posicao x mapa / proporcao de y
 			la t0, POS_Backgorund_library
 			lh t1, 2(t0)
 			add a7, a7, t1	# soma da posicao inicial com a movimentacao dinamica
-			#li a7, 1266
-			li a7, 1067
+
 			#calcular se a camera na posicao dinamica n esta ultrapassando os limites do mapa
-			#la t0, FILE_MAP_SIZE
-			#lh t1, 2(t0)
-			#sub t2, t1, a7		#t2 = diferenca entre pos dinamica do background com o tamanho total		
-			#li t0, 240			
-			#bge t2, t0, J_BACKGROUND#se t2 < 320(linha abaixo)
-			#addi t1, t1, -241
-		
+			la t0, FILE_MAP_SIZE
+			lh t1, 2(t0)
+			sub t2, t1, a7		#t2 = diferenca entre pos dinamica do background com o tamanho total		
+			li t0, 240			
+			bge t2, t0, J_BACKGROUND2#se t2 < 240(linha abaixo)
+			addi t1, t1, -240
+			mv a7, t1
+			J_BACKGROUND2:
+			
+			
 			
 			#print background:
 			mv	a0, s0
-			#lh	t1, 0(t0)
-			li a1, 0
+			li	a1, 0
 			li a2, 0
 			#lh 	t2, 2(t0)
 			la	a3, FILE_MAP_SIZE
 			la	a4, Backgorund_library_size	#talvez seja maior do q devia
 			mv	a5, s1
-			#a1 construido anteriormente
-			#a2 construido anteriormente
+			#li a6, 500
+			#li a7, 1200
+			#a6 construido anteriormente
+			#a7 construido anteriormente
 			call	PRINT	
 			
 OFF_BACKGROUND:																								
