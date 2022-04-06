@@ -4,9 +4,9 @@
 
 .data 
 
-PLAYER_POS:	.half 380, 900	# posicao atual do player
+PLAYER_POS:	.word 380, 900	# posicao atual do player
 PLAYER_SIZE:	.half 25, 48	#tamanho do Ritcher
-
+v: .string "colisao wall"
 
 
 
@@ -29,7 +29,24 @@ PLAYER_SIZE:	.half 25, 48	#tamanho do Ritcher
 #s11 = frame control
 
 MAIN:
-# Open MAPA file
+# Open MAPA file	
+
+			
+			la		t0, PLAYER_POS
+			flw		fs0, 0(t0)		# fs0 = char x
+			flw		fs1, 4(t0)		# fs1 = char y
+			li t0, 2
+			fcvt.s.w	fs2, t0		# fs2 = x velocity
+			fcvt.s.w	fs3, zero		# fs3 = y velocity
+			#fcvt.s.w	fs4, zero		# fs4 = jump grace timer
+			#fcvt.s.w	fs5, zero		# fs5 = varJumpTimer
+			#fcvt.s.w	fs6, zero		# fs6 = varJumpSpeed
+			#fcvt.s.w	fs7, zero		# fs7 = maxfall
+			#fcvt.s.w	fs8, zero		# fs8 = dash timer
+			
+			
+			
+			
 			li	a7, 1024
 			la	a0, Map_library
 			li	a1, 0
@@ -53,23 +70,43 @@ MAIN_LOOP:		# O framerate de 60 fps
 			call 	KEY	#verifica teclado
 			#Soma as posicoes novas da KEY
 			la t0, PLAYER_POS
-			lh t1, 0(t0)			#x
+			lw t1, 0(t0)			#x
 			add t1, t1, a0
 			sh t1, 0(t0)
 			
-			lh t1, 2(t0)			#y
+			lw t1, 4(t0)			#y
 			add t1, t1, a1
-			sh t1, 2(t0)
+			sh t1, 4(t0)
+			li a0, 0
+			li a1, 0
+			#j VERIFY_MAP_POS
 			
-
-
+			
+			la		t0, PLAYER_POS
+			lw		t1, 0(t0)		# fs0 = char x
+			lw		t2, 4(t0)		# fs1 = char y
+			
+			fcvt.s.w fs0, t1
+			fcvt.s.w fs1, t2
+			
+			la a0, POS_P1_library
+			call SCIENCE_COLLISION
+			#Soma as posicoes novas da KEY
+			la t0, PLAYER_POS
+			lw t1, 0(t0)			#x
+			add t1, t1, a0
+			#sh t1, 0(t0)
+			
+			lw t1, 4(t0)			#y
+			add t1, t1, a1
+			#sh t1, 4(t0)
 
 #calcular a camera do jogador como visao do mapa levando em conta 
 #a posicao central do jogador
 VERIFY_MAP_POS:		
 			#Determinar x limite
 			la t0, PLAYER_POS
-			lh t1, 0(t0)			#x
+			lw t1, 0(t0)			#x
 			addi	t1, t1, OFFSET_X	# a0 = char x - offset x do mapa (o mapa fica x pixels pra esquerda do personagem)
 			bge t1, zero,VERIFY_MAP_POS_JUMP #t1 > 0
 			mv t1, zero			#senao t1 = 0
@@ -94,7 +131,7 @@ VERIFY_MAP_POS:
 		
 			#Determinar y limite
 			la t0, PLAYER_POS
-			lh t1, 2(t0)			#y
+			lw t1, 4(t0)			#y
 			addi t1, t1, OFFSET_X		# a0 = char x - offset x do mapa (o mapa fica x pixels pra esquerda do personagem)
 			bge t1, zero, VERIFY_MAP_POS_JUMP4 #t1 > 0
 			mv t1, zero			#senao t1 = 0
@@ -164,12 +201,12 @@ PLAYER_PRINT:
 			# Calculo da posicao do personagem na tela em relacao ao mapa
 			# x = player x - map x
 			la 	t0, PLAYER_POS
-			lh 	a1,0(t0)
+			lw	a1,0(t0)
 			sub	a1, a1, s3
 				
 			# x = player x - map x
 			la 	t0, PLAYER_POS
-			lh 	a2,2(t0)
+			lw	a2,4(t0)
 			sub	a2, a2, s4
 			la	a3, Ritcher_size
 			la	a4, PLAYER_SIZE
@@ -207,7 +244,7 @@ ecall
 #Procedimentos
 .include "Proc.s"	
 .include "Keyboard.s"
-
+.include "Pure_science.s"
 .data
 #imagens
-#.include "./Imagens/Ritcher_Stand0.data"
+.include "./Imagens/matriz8x8testejogo.data"

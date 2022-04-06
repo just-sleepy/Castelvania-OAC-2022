@@ -33,7 +33,18 @@
 
 
 
+.eqv OFFSET_Y_HITBOX		48
+.eqv OFFSET_X_HITBOX		24	
+
+
 .data
+
+HITBOX_MAP_SIZE:		.half 544, 357
+
+
+
+
+
 #MAPAS:
 BACKGROUND:			.byte 1	#(1 para que tem background e 0 que nao tem)
 

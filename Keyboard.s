@@ -16,6 +16,10 @@ KEY:
   		beq		t0, t1, KEY_S
   		li		t1, 'd'
 		beq		t0, t1, KEY_D
+
+KEY_NONE:	li a0, 0
+		li a1, 0	
+		ret		
 		
 #se soma valores que apos o call Key serao somados na posicao do personagem(movimentacao em pixels) sem fisica de velocidade inclusa
 #a0 = x
@@ -27,6 +31,8 @@ KEY_W:		li a0, 0
 
 KEY_A:		li a0, -8
 		li a1, 0
+		#li t2, zero
+		#fcvt.s.w fs2, t2
 		ret
 
 KEY_S:		li a0, 0
@@ -35,6 +41,8 @@ KEY_S:		li a0, 0
 
 KEY_D:		li a0, 8
 		li a1, 0
+		li t2, 1
+		#fcvt.s.w fs2, t2
 		ret		
 		
 		
