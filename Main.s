@@ -26,11 +26,12 @@ v: .string "colisao wall"
 # s1 = frame
 # s3 = mapa x
 # s4 = mapa y
+#s10 = buffer control
 #s11 = frame control
 
 MAIN:
 # Open MAPA file	
-
+			
 			
 			la		t0, PLAYER_POS
 			flw		fs0, 0(t0)		# fs0 = char x
@@ -90,15 +91,15 @@ MAIN_LOOP:		# O framerate de 60 fps
 			fcvt.s.w fs1, t2
 			
 			la a0, POS_P1_library
-			call SCIENCE_COLLISION
+			#call SCIENCE_COLLISION
 			#Soma as posicoes novas da KEY
-			la t0, PLAYER_POS
-			lw t1, 0(t0)			#x
-			add t1, t1, a0
+			#la t0, PLAYER_POS
+			#lw t1, 0(t0)			#x
+			#add t1, t1, a0
 			#sh t1, 0(t0)
 			
-			lw t1, 4(t0)			#y
-			add t1, t1, a1
+			#lw t1, 4(t0)			#y
+			#add t1, t1, a1
 			#sh t1, 4(t0)
 
 #calcular a camera do jogador como visao do mapa levando em conta 
@@ -247,4 +248,4 @@ ecall
 .include "Pure_science.s"
 .data
 #imagens
-.include "./Imagens/matriz8x8testejogo.data"
+.include "./Imagens/Map_matriz.data"

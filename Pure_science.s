@@ -1,3 +1,4 @@
+
 .text
 ###################### PROCEDIMENTO SCIENCE #####################
 #	ARGUMENTOS:						#
@@ -12,11 +13,6 @@ SCIENCE:
 
 SCIENCE_COLLISION:	la		t6, HITBOX		# t0 = block address
 
-			#fmul.s		ft2, fs2, fa7		# Speed.X * DeltaTime
-			#fadd.s		ft2, fs0, ft2		# Pos.X + Speed.X * DeltaTime
-			
-			#fmul.s		ft3, fs3, fa7		# Speed.Y * DeltaTime
-			#fadd.s		ft3, fs1, ft3		# Pos.Y + Speed.Y * DeltaTime
 			
 			fcvt.s.w	ft0, zero
 			fadd.s		ft2, ft0, fs0
@@ -25,7 +21,7 @@ SCIENCE_COLLISION:	la		t6, HITBOX		# t0 = block address
 			
 			# Colisao horizontal
 			
-			li		t1, 8			#cada ponto do hitbox contempla 8x8 pixels
+			li		t1, 1			#cada ponto do hitbox contempla 8x8 pixels
 			fcvt.s.w	ft1, t1			# ft1 = 8
 			
 			fcvt.s.w	ft0, zero
@@ -41,15 +37,16 @@ SCIENCE_COLLISION:	la		t6, HITBOX		# t0 = block address
 			li a0, 0
 			li a1, 0
 			ret
-SCIENCE_COLLISION_X_R:	li		t1, OFFSET_Y_HITBOX
+SCIENCE_COLLISION_X_R:	li		t1, PLAYER_HEIGHT
 			fcvt.s.w	ft4, t1			# ft4 = x offset
 			
 			fadd.s		ft0, ft3, ft4		# ft0 = y + y offset
 			
-			lh 		t1, 2(a0)		#y do pos setor, que vai servir de offset para posicao do setor atual
-			fcvt.s.w	ft6, t1			# ft4 = hitbox map x
-			#fadd.s		ft0, ft0, ft6		# ft0 = y + oofset setor
-			fsub.s 		ft0, ft0, ft6
+			lh 		t1, 2(a0)		#offset do mapa	setor
+			fcvt.s.w	ft4 , t1
+			fadd.s 		ft0, ft0, ft4
+			
+			
 			fdiv.s		ft0, ft0, ft1		# ft0 = y / 8
 			fcvt.wu.s	t1, ft0			# t1 = floor(ft0)
 			fcvt.s.wu	ft0, t1
@@ -63,18 +60,18 @@ SCIENCE_COLLISION_X_R:	li		t1, OFFSET_Y_HITBOX
 			fcvt.wu.s	t1, ft0			# t1 = floor(ft0)
 			add		t4, t6, t1		# t4 += t1 + pos hitbox
 			
-			li		t1, OFFSET_X_HITBOX
+			li		t1, PLAYER_WIDTH	
 			fcvt.s.w	ft4, t1			# ft4 = x offset
 			
-			fadd.s		ft4, ft2, ft4		# ft4 = char x + offset
+			fadd.s		ft0, ft2, ft4		# ft4 = palyer x + offset
 			
 			lh 		t1, 0(a0)		#y do pos setor, que vai servir de offset para posicao do setor atual
-			fcvt.s.w	ft6, t1			# ft4 = hitbox map x
-			############fadd.s		ft4, ft4, ft6	# ft0 = x + oofset setor
-			fadd.s 		ft4, ft4, ft6
+			fcvt.s.w	ft4, t1			# ft4 = hitbox map x
+			fadd.s		ft0, ft0, ft4		# ft0 = x + oofset setor
 			
-			fdiv.s		ft5, ft4, ft1		# ft5 = x / 8
-			fcvt.wu.s	t1, ft5			# t1 = floor(ft2)
+			
+			#fdiv.s		ft5, ft4, ft1		# ft5 = x / 8
+			fcvt.wu.s	t1, ft0			# t1 = floor(ft0)
 			
 			add		t2, t4, t1		# t2 = pos y + posx (with offset)
 			
@@ -87,6 +84,9 @@ SCIENCE_COLLISION_X_R:	li		t1, OFFSET_Y_HITBOX
 			lbu		t1, 0(t2)
 			beqz		t1, COLLISION_X_EFFECT
 			
+			
+			li a0, 0
+			li a1, 0
 			ret
 			#j		PHYSICS.COLL.Y
 
@@ -119,31 +119,26 @@ SCIENCE_COLLISION_X_L:	li		t1, OFFSET_Y_HITBOX
 			lbu		t1, 0(t2)
 			bnez		t1, COLLISION_X_EFFECT
 
-			#lbu		t1, HITBOX_MAP_WIDTH(t2)
+			#lbu		t1, size_x(t2)
 			#bnez		t1, COLLISION_X_EFFECT
 			
+			li a0, 0
+			li a1, 0
 			ret
-			#j		PHYSICS.COLL.Y
 
-COLLISION_X_EFFECT:	li		t2, 0			# wall = 0
+
+COLLISION_X_EFFECT:	
+			li a0, 0
+			li a1, 0
+			li		t2, 0			# wall = 0
 			beq		t1, t2, HIT_WALL
 			
-			
-			#la		t0, JUMPGRACETIME	# resets grace timer if onGround
-			#flw		fs4, 0(t0)		# jumpGraceTimer = JumpGraceTime
-			
-			#fcvt.s.w	fs2, zero		# Speed.X = 0
 			ret	
 
 
 HIT_WALL:
 		
-		la a0, v
-		
-		li a7,4
-		ecall 
-		li a0, 0
-		li a1, 0
-		#li a0, 0
-		#li a1, 0
+		addi a0, a0 -1
+		addi t2, t2, -1
+		beq t2, zero, HIT_WALL	#Volta 1 pixel até estar fora da colisao
 		ret
