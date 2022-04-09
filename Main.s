@@ -3,8 +3,8 @@
 
 
 .data 
-
 PLAYER_POS:	.word 380, 900	# posicao atual do player
+#PLAYER_POS:	.word 380, 800	# posicao atual do player
 PLAYER_SIZE:	.half 25, 48	#tamanho do Ritcher
 
 
@@ -41,8 +41,8 @@ MAIN:
 			la		t0, PLAYER_POS
 			flw		fs0, 0(t0)		# fs0 = char x
 			flw		fs1, 4(t0)		# fs1 = char y
-			li t0,0
-			fcvt.s.w	fs2, t0		# fs2 = x velocity
+
+			fcvt.s.w	fs2, zero		# fs2 = x velocity
 			fcvt.s.w	fs3, zero		# fs3 = y velocity
 			#fcvt.s.w	fs4, zero		# fs4 = jump grace timer
 			#fcvt.s.w	fs5, zero		# fs5 = varJumpTimer
@@ -103,14 +103,14 @@ MAIN_LOOP:		# O framerate de 60 fps
 			la a2, P1_library_size
 			call SCIENCE_COLLISION
 			#Soma as posicoes novas da KEY
-			la t0, PLAYER_POS
-			lw t1, 0(t0)			#x
-			add t1, t1, a0
-			sh t1, 0(t0)
+			#la t0, PLAYER_POS
+			#lw t1, 0(t0)			#x
+			#add t1, t1, a0
+			#sh t1, 0(t0)
 			
-			lw t1, 4(t0)			#y
-			add t1, t1, a1
-			sh t1, 4(t0)
+			#lw t1, 4(t0)			#y
+			#add t1, t1, a1
+			#sh t1, 4(t0)
 
 #calcular a camera do jogador como visao do mapa levando em conta 
 #a posicao central do jogador

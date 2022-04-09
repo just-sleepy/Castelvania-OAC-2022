@@ -108,28 +108,31 @@ li a0, 0
 li a1, 0
 
 KEY_W:		beq t2, zero, KEY_A 	#se tecla nao esta pressionada vai para proximo												
-		addi a0, a0, 0
-		addi a1, a1, -4	
-
+		addi a0, a0, 0	#movimento horizontal
+		addi a1, a1, -4	#movimento vertical
+		li t2, -1
+		fcvt.s.w fs3, t2	#velocidade vertical
 
 KEY_A:		beq t3, zero, KEY_S 	#se tecla nao esta pressionada vai para proximo	
-		addi a0, a0, -4
-		addi a1, a1, 0
-		li t2, -1
-		fcvt.s.w fs2, t2
+		addi a0, a0, -4	#movimento horizontal
+		addi a1, a1, 0	#movimento vertical
+		li t2, -1	
+		fcvt.s.w fs2, t2	#velocidade horizontal
 
 KEY_S:		beq t4, zero, KEY_D 	#se tecla nao esta pressionada vai para proximo	
-		addi a0, a0, 0
-		addi a1, a1, 4
-		
+		addi a0, a0, 0	#movimento horizontal
+		addi a1, a1, 4	#movimento vertical
+		li t2, 1
+		fcvt.s.w fs3, t2	#velocidade vertical
 
 KEY_D:		beq t5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proximo	
-		addi a0, a0, 4
-		addi a1, a1, 0
+		addi a0, a0, 4	#movimento horizontal
+		addi a1, a1, 0	#movimento vertical
 		li t2, 1
-		fcvt.s.w fs2, t2
-		
-		
+		fcvt.s.w fs2, t2	#velocidade horizontal
+		li t2, 1
+		fcvt.s.w fs2, t2	#velocidade horizontal
+
 		
 		
 FINISH_KEY:
