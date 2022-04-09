@@ -38,9 +38,10 @@
 
 
 .data
+.include "./Imagens/setores_matriz/P1_Map_library.data"
 
 HITBOX_MAP_SIZE:		.half 4352, 2856
-
+HITBOX:				.string 		"./Imagens/Map_matriz.bin"
 
 
 
@@ -60,7 +61,7 @@ FILE_MAP_SIZE:			.half 4356, 2860	#sempre fazer x += 1(não sei o porque)
 Backgorund_library_size: 	.half  640, 485
 POS_Backgorund_library:		.half 1215, 1141
 
-P1_library_size:		.half 1280, 975
+P1_library_size:		.half 1280, 974
 POS_P1_library:			.half 113, 48
 
 

@@ -6,7 +6,7 @@
 
 PLAYER_POS:	.word 380, 900	# posicao atual do player
 PLAYER_SIZE:	.half 25, 48	#tamanho do Ritcher
-v: .string "colisao wall"
+
 
 
 
@@ -31,12 +31,17 @@ v: .string "colisao wall"
 
 MAIN:
 # Open MAPA file	
-			
+			#create stack
+			addi	sp,sp,-480
+			#save s10
+			sw	s10,44(sp)
+			#update s10
+			addi	s10,sp,48	
 			
 			la		t0, PLAYER_POS
 			flw		fs0, 0(t0)		# fs0 = char x
 			flw		fs1, 4(t0)		# fs1 = char y
-			li t0, 2
+			li t0,0
 			fcvt.s.w	fs2, t0		# fs2 = x velocity
 			fcvt.s.w	fs3, zero		# fs3 = y velocity
 			#fcvt.s.w	fs4, zero		# fs4 = jump grace timer
@@ -70,17 +75,19 @@ MAIN_LOOP:		# O framerate de 60 fps
 
 			call 	KEY	#verifica teclado
 			#Soma as posicoes novas da KEY
+
 			la t0, PLAYER_POS
 			lw t1, 0(t0)			#x
 			add t1, t1, a0
 			sh t1, 0(t0)
+			
+			
 			
 			lw t1, 4(t0)			#y
 			add t1, t1, a1
 			sh t1, 4(t0)
 			li a0, 0
 			li a1, 0
-			#j VERIFY_MAP_POS
 			
 			
 			la		t0, PLAYER_POS
@@ -90,17 +97,20 @@ MAIN_LOOP:		# O framerate de 60 fps
 			fcvt.s.w fs0, t1
 			fcvt.s.w fs1, t2
 			
-			la a0, POS_P1_library
-			#call SCIENCE_COLLISION
-			#Soma as posicoes novas da KEY
-			#la t0, PLAYER_POS
-			#lw t1, 0(t0)			#x
-			#add t1, t1, a0
-			#sh t1, 0(t0)
 			
-			#lw t1, 4(t0)			#y
-			#add t1, t1, a1
-			#sh t1, 4(t0)
+			la a0, POS_P1_library
+			la a1, P1_Map_library
+			la a2, P1_library_size
+			call SCIENCE_COLLISION
+			#Soma as posicoes novas da KEY
+			la t0, PLAYER_POS
+			lw t1, 0(t0)			#x
+			add t1, t1, a0
+			sh t1, 0(t0)
+			
+			lw t1, 4(t0)			#y
+			add t1, t1, a1
+			sh t1, 4(t0)
 
 #calcular a camera do jogador como visao do mapa levando em conta 
 #a posicao central do jogador
@@ -234,18 +244,11 @@ j MAIN_LOOP
 
 
 
-
-
-
-
-
 li a7,10
 ecall
 
 #Procedimentos
 .include "Proc.s"	
 .include "Keyboard.s"
+
 .include "Pure_science.s"
-.data
-#imagens
-.include "./Imagens/Map_matriz.data"
