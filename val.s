@@ -38,7 +38,8 @@
 
 
 .data
-.include "./Imagens/setores_matriz/P1_Map_library.data"
+
+
 
 HITBOX_MAP_SIZE:		.half 4352, 2856
 HITBOX:				.string 		"./Imagens/Map_matriz.bin"
@@ -63,7 +64,7 @@ POS_Backgorund_library:		.half 1215, 1141
 
 P1_library_size:		.half 1280, 974
 POS_P1_library:			.half 113, 48
-
+.include "./Imagens/setores_matriz/P1_Map_library.data"
 
 
 #Area do mapa e da tela

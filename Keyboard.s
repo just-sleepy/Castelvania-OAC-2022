@@ -130,8 +130,6 @@ KEY_D:		beq t5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proxim
 		addi a1, a1, 0	#movimento vertical
 		li t2, 1
 		fcvt.s.w fs2, t2	#velocidade horizontal
-		li t2, 1
-		fcvt.s.w fs2, t2	#velocidade horizontal
 
 		
 		

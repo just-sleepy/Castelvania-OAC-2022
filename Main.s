@@ -102,15 +102,7 @@ MAIN_LOOP:		# O framerate de 60 fps
 			la a1, P1_Map_library
 			la a2, P1_library_size
 			call SCIENCE_COLLISION
-			#Soma as posicoes novas da KEY
-			#la t0, PLAYER_POS
-			#lw t1, 0(t0)			#x
-			#add t1, t1, a0
-			#sh t1, 0(t0)
 			
-			#lw t1, 4(t0)			#y
-			#add t1, t1, a1
-			#sh t1, 4(t0)
 
 #calcular a camera do jogador como visao do mapa levando em conta 
 #a posicao central do jogador
