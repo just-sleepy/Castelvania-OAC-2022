@@ -19,7 +19,7 @@
 .eqv MAPA_HEIGHT		979
 
 # Tamanho do personagem (char.bin)
-.eqv PLAYER_WIDTH		24
+.eqv PLAYER_WIDTH		22
 .eqv PLAYER_HEIGHT		48
 
 #
@@ -52,7 +52,7 @@ BACKGROUND:			.byte 1	#(1 para que tem background e 0 que nao tem)
 
 #Ritcher
 Ritcher:			.string 		"./Imagens/Ritcher.bin"
-Ritcher_size:			.half 476, 896	#sempre fazer x += 1(não sei o porque)
+Ritcher_size:			.half 952, 896	#sempre fazer x += 1(não sei o porque)
 
 #Library
 Map_library:			.string 		"./Imagens/Map_library.bin"

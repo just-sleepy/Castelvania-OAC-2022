@@ -35,7 +35,7 @@ KEY:
 KEY_END:
 		csrr		t0, 3073		# t0 = tempo atual
 		sub		t0, t0, t5		# t0 = tempo atual - ultimo frame
-		li		t1, 16	# 16ms 
+		li		t1, 24	# 16ms 
 		
 		li t2, 0
 		addi 		t2, t6, 40		#s10 em posicao 0
@@ -46,8 +46,6 @@ KEY_END:
 				
 								
 BUFFER_MOVEMENTS:
-		
-
 		li t2, 0	#se tecla w foi pressionada(0 = False, 1 = True)
 		li t3, 0	#se tecla a foi pressionada(0 = False, 1 = True)
 		li t4, 0	#se tecla s foi pressionada(0 = False, 1 = True)	
@@ -58,12 +56,6 @@ LOOP_BUFFER:
 		beq, s10, t6, SELECT_KEYS
 		addi	s10, s10, -4
 		lw	t0, -400(s10)	#armazena 
-		
-	
-		
-
-		
-
 
 		# Movimentos 
   		li		t1, 'w'
@@ -103,34 +95,54 @@ LOOP_BUFFER:
 #a0 = x
 #a1 = y	
 SELECT_KEYS:
-		
+bne t3, zero,  STILL_MOVING
+bne t5, zero, STILL_MOVING
+la t0, MOVING		#Determina q o personagem nao se move
+li t1, 0
+sb t1, 0(t0)
+la t0, PLAYER_STANCE		
+lh t1, 0(t0)
+li a0, 16
+bge a0, t1, STILL_MOVING #Se a stance for maior que 16 significa q o personagem não estava parado
+li t1, 0
+sh t1, 0(t0)
+
+STILL_MOVING:#COntinua se movendo se houver o pulo		
+						
 li a0, 0
 li a1, 0
 
 KEY_W:		beq t2, zero, KEY_A 	#se tecla nao esta pressionada vai para proximo												
 		addi a0, a0, 0	#movimento horizontal
-		addi a1, a1, -4	#movimento vertical
+		addi a1, a1, -2	#movimento vertical
 		li t2, -1
 		fcvt.s.w fs3, t2	#velocidade vertical
 
 KEY_A:		beq t3, zero, KEY_S 	#se tecla nao esta pressionada vai para proximo	
-		addi a0, a0, -4	#movimento horizontal
+		addi a0, a0, -2	#movimento horizontal
 		addi a1, a1, 0	#movimento vertical
 		li t2, -1	
 		fcvt.s.w fs2, t2	#velocidade horizontal
+		la t0, MOVING		#Determina q o personagem se move
+		li t1, 1
+		sb t1, 0(t0)
 
 KEY_S:		beq t4, zero, KEY_D 	#se tecla nao esta pressionada vai para proximo	
 		addi a0, a0, 0	#movimento horizontal
-		addi a1, a1, 4	#movimento vertical
+		addi a1, a1, 2	#movimento vertical
 		li t2, 1
 		fcvt.s.w fs3, t2	#velocidade vertical
 
+		
+
 KEY_D:		beq t5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proximo	
-		addi a0, a0, 4	#movimento horizontal
+		addi a0, a0, 2	#movimento horizontal
 		addi a1, a1, 0	#movimento vertical
 		li t2, 1
 		fcvt.s.w fs2, t2	#velocidade horizontal
-
+		la t0, MOVING		#Determina q o personagem se move
+		li t1, 1
+		sb t1, 0(t0)
 		
 		
 FINISH_KEY:

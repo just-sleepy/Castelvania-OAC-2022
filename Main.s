@@ -4,9 +4,7 @@
 
 .data 
 PLAYER_POS:	.word 380, 900	# posicao atual do player
-#PLAYER_POS:	.word 380, 800	# posicao atual do player
-PLAYER_SIZE:	.half 25, 48	#tamanho do Ritcher
-
+PLAYER_SIZE:	.half 22, 48	#tamanho do Ritcher
 
 
 
@@ -68,8 +66,8 @@ MAIN:
 MAIN_LOOP:		# O framerate de 60 fps
 			#Se for 60 FPS, por exemplo, 1 segundo / 60 = 0.01666, ou 16 ms#
 			csrr		t0, 3073		# t0 = tempo atual
-			sub		t0, s11, t0		# t0 = tempo atual - ultimo frame
-			li		t1, 16			# 16ms 
+			sub		t0, t0, s11		# t0 = tempo atual - ultimo frame
+			li		t1, 16		# 16ms 
 			bltu		t0, t1, MAIN_LOOP	
 
 
@@ -214,8 +212,9 @@ PLAYER_PRINT:
 			la	a3, Ritcher_size
 			la	a4, PLAYER_SIZE
 			mv	a5, s1
-			li 	a6, 6
-			li	a7, 10
+			call 	STANCE
+			#li 	a6, 6
+			#li	a7, 10
 			call	PRINT	
 						
 												
@@ -242,5 +241,5 @@ ecall
 #Procedimentos
 .include "Proc.s"	
 .include "Keyboard.s"
-
+.include "Stance.s"
 .include "Pure_science.s"
