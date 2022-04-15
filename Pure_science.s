@@ -1,3 +1,8 @@
+.data
+ON_AIR:		.byte 0 #(0 = no chao, 1 = no ar)
+
+
+
 .text
 ###################### PROCEDIMENTO SCIENCE #####################
 #	ARGUMENTOS:						#
@@ -10,6 +15,22 @@
 
 SCIENCE:
 
+GRAVITY:		la t0, ON_AIR
+			lb t2, 0(t0)
+			beq t2, zero, ON_GROUND	#se for igual a zero significa que esta no chao
+			li t1, 1
+			fcvt.s.w  ft1, t1
+			li t2, 2
+			fcvt.s.w ft2, t2
+			fdiv.s ft1, ft1, ft2	#ft1 = 1/2 = 0.5
+			fadd.s fs3, fs3, ft1	#velocidade vertical += 0.5 (AUMENTA A GRAVIDADE APESAR DE POSITIVO)
+			li a1, 1		#Há movimento vertical	
+			ret
+			
+			ON_GROUND:
+			li t1, 1
+			fcvt.s.w  fs3, t1	#Colisao mirada somente para cima
+			ret						
 
 SCIENCE_COLLISION:	mv t6, a1
 
@@ -102,6 +123,17 @@ SCIENCE_COLLISION_Y_DOWN:
 			#------------------------1/1 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
 			beqz		t1, COLLISION_Y_EFFECT
+			
+			
+				#Sem colisao significa que esta flutuando e a gravidade começa a fazer efeito
+				la t0, ON_AIR
+				lb t2, 0(t0)
+				bne t2, zero, ON_AIR_J	#Se igual a zero passa a ser um
+				li t2, 1
+				sb t2, 0(t0)
+				ON_AIR_J:
+				
+			
 			j SCIENCE_COLLISION_X
 			
 					
@@ -388,7 +420,10 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			ret	
 
 	HIT_FLOOR:	
-	
+			
+			
+			
+			
 			fcvt.s.w	ft0, zero
 			flt.s		t1, ft0, fs3		# Speed.X > 0
 			bnez		t1, HIT_FLOOR_DOWN
@@ -411,6 +446,9 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			
 										
 			HIT_FLOOR_DOWN:	
+			la 		t0, ON_AIR
+			sb 		zero, 0(t0)	#Houve colisao de chao, logo, n esta mais flutuando
+
 			#muda posicao player		
 			la t0, PLAYER_POS		
 			lw t1, 4(t0)			#y

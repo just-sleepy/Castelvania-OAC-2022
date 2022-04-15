@@ -29,16 +29,16 @@ KEY:
   	 	
 		lw	t0, 4(t1)	# se houver tecla pressionada, pega o valor  pra comparacao
 
-		sw	t0,-40(s10)	#armazena no buffer a tecla na posicao atual
+		sw	t0,-400(s10)	#armazena no buffer a tecla na posicao atual
 		addi	s10, s10, 4	#move para proxima casa
 		
 KEY_END:
 		csrr		t0, 3073		# t0 = tempo atual
 		sub		t0, t0, t5		# t0 = tempo atual - ultimo frame
-		li		t1, 24	# 16ms 
+		li		t1, 16		# 16ms 
 		
-		li t2, 0
-		addi 		t2, t6, 40		#s10 em posicao 0
+		li 		t2, 0
+		addi 		t2, t6, 400		#s10 em posicao 0
 		beq 		s10, t2, BUFFER_MOVEMENTS
 		bltu		t0, t1, K
 		#j K
@@ -55,7 +55,7 @@ LOOP_BUFFER:
 		#se confere todas as teclas pressionadas, e sem repetir, determina qual seram ativadas	
 		beq, s10, t6, SELECT_KEYS
 		addi	s10, s10, -4
-		lw	t0, -40(s10)	#armazena 
+		lw	t0, -400(s10)	#armazena 
 
 		# Movimentos 
   		li		t1, 'w'
@@ -114,13 +114,12 @@ li a1, 0
 
 KEY_W:		beq t2, zero, KEY_A 	#se tecla nao esta pressionada vai para proximo												
 		addi a0, a0, 0	#movimento horizontal
-		addi a1, a1, -1	#movimento vertical
-		li t2, -1
+		addi a1, a1, 1	#movimento vertical
+		li t2, -4
 		fcvt.s.w fs3, t2	#velocidade vertical
 
 KEY_A:		beq t3, zero, KEY_S 	#se tecla nao esta pressionada vai para proximo	
-		addi a0, a0, -1	#movimento horizontal
-		addi a1, a1, 0	#movimento vertical
+		addi a0, a0, 1	#movimento horizontal
 		li t2, -1	
 		fcvt.s.w fs2, t2	#velocidade horizontal
 		la t0, MOVING		#Determina q o personagem se move
@@ -140,7 +139,6 @@ KEY_S:		beq t4, zero, KEY_D 	#se tecla nao esta pressionada vai para proximo
 
 KEY_D:		beq t5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proximo	
 		addi a0, a0, 1	#movimento horizontal
-		addi a1, a1, 0	#movimento vertical
 		li t2, 1
 		fcvt.s.w fs2, t2	#velocidade horizontal
 		la t0, MOVING		#Determina q o personagem se move

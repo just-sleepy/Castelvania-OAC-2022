@@ -131,8 +131,8 @@ ret
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk0_J
-	addi a6, a6, 730
-	addi a7, a7, -1
+	addi a6, a6, 917
+	addi a7, a7, -2
 		Walk0_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
@@ -143,8 +143,8 @@ ret
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk1_J
-	addi a6, a6, 723
-	addi a7, a7, -1
+	addi a6, a6, 849
+	addi a7, a7, -2
 		Walk1_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
@@ -155,8 +155,8 @@ ret
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk2_J
-	addi a6, a6, 726
-	addi a7, a7, -1
+	addi a6, a6, 795
+	addi a7, a7, -2
 		Walk2_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
@@ -168,7 +168,7 @@ ret
 	lb t0, 0(t4)
 	beq t0, zero,Walk3_J
 	addi a6, a6, 728
-	addi a7, a7, -1
+	addi a7, a7, -2
 		Walk3_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
@@ -178,8 +178,8 @@ ret
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk4_J
-	addi a6, a6, 733
-	addi a7, a7, -1
+	addi a6, a6, 664
+	addi a7, a7, -2
 		Walk4_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
@@ -190,8 +190,8 @@ ret
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk5_J
-	addi a6, a6, 704
-	addi a7, a7, -1
+	addi a6, a6, 595
+	addi a7, a7, -2
 		Walk5_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
@@ -202,8 +202,8 @@ ret
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk6_J
-	addi a6, a6, 693
-	addi a7, a7, -1
+	addi a6, a6, 539
+	addi a7, a7, -2
 		Walk6_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
@@ -214,8 +214,8 @@ ret
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk7_J
-	addi a6, a6, 701
-	addi a7, a7, -1
+	addi a6, a6, 487
+	addi a7, a7, -2
 		Walk7_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
@@ -226,8 +226,8 @@ ret
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk8_J
-	addi a6, a6, 704
-	addi a7, a7, -1
+	addi a6, a6, 917
+	addi a7, a7, -2
 		Walk8_J:
 		li t1, 17
 		sh t1, 0(t3)
