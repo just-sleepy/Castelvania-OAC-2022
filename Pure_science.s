@@ -1,9 +1,13 @@
 .data
-ON_AIR:		.byte 0 #(0 = no chao, 1 = no ar)
-
-
+ON_AIR:		.byte 1 #(0 = no chao, 1 = no ar)
+JUMP:		.byte 0 #(0 = jump not pressed, 1 = jump pressed)
+JUMP_BOOST_LIMIT: .byte 0 #(so pode ser usado 3 vezes)
+v:		.string "debugar "
 
 .text
+
+.eqv MAX_GRAV 	10
+.eqv BOOST_LIMIT 24
 ###################### PROCEDIMENTO SCIENCE #####################
 #	ARGUMENTOS:						#
 #		a0 = posicao setor				#
@@ -18,21 +22,56 @@ SCIENCE:
 GRAVITY:		la t0, ON_AIR
 			lb t2, 0(t0)
 			beq t2, zero, ON_GROUND	#se for igual a zero significa que esta no chao
+			fcvt.w.s t1, fs3
+			li t3, MAX_GRAV
+			beq t1, t3, GRAV_J	#se ultrapassar a gravidade maxima 
 			li t1, 1
 			fcvt.s.w  ft1, t1
-			li t2, 2
+			li t2, 4
 			fcvt.s.w ft2, t2
-			fdiv.s ft1, ft1, ft2	#ft1 = 1/2 = 0.5
-			fadd.s fs3, fs3, ft1	#velocidade vertical += 0.5 (AUMENTA A GRAVIDADE APESAR DE POSITIVO)
-			li a1, 1		#Há movimento vertical	
+			fdiv.s ft1, ft1, ft2	#ft1 = 1/4 = 0.25
+			fadd.s fs3, fs3, ft1	#velocidade vertical += 0.25 (AUMENTA A GRAVIDADE APESAR DE POSITIVO)
+			GRAV_J:
+			li a1, 1
+			la t0, JUMP
+			lb t1, 0(t0)
+			li t2, 1
+			beq t1, t2 JUMP_BOOST #Se t1 = 1, boost no pulo
 			ret
 			
 			ON_GROUND:
+			la t0, JUMP
+			lb t1, 0(t0)
+			beqz t1, NOT_JUMP #Se t1 estiver zerado, não pula
+			j JUMPING
+			
+			NOT_JUMP:
+			li t2, 1
+			fcvt.s.w  fs3,t2	#Gravidade resetada
+			ret
+			
+JUMP_BOOST:		la t0, JUMP_BOOST_LIMIT
+			lb t1, 0(t0)
+			blt t1, zero, JUMP_RET	#t1 = -1, napo pode mais usar o boost
+			addi t1, t1, 1
+			li t2, BOOST_LIMIT
+			bge t2, t1, LIMIT_NOT_EXC
+			ret
+			LIMIT_NOT_EXC:
+			sb t1,0(t0)	
+						
+			
+JUMPING:		li a1, 1
+			li t0, -3
+			fcvt.s.w  fs3, t0
+			la t0, ON_AIR
 			li t1, 1
-			fcvt.s.w  fs3, t1	#Colisao mirada somente para cima
-			ret						
+			sb t1, 0(t0)
+			JUMP_RET:
+			ret
+																										
 
-SCIENCE_COLLISION:	mv t6, a1
+SCIENCE_COLLISION:	mv 		t6, a1
 
 			fcvt.s.w	ft0, zero
 			fadd.s		ft6, ft0, fs0
@@ -45,9 +84,12 @@ SCIENCE_COLLISION_Y:	# Colisao vertical
 			bnez		t1, SCIENCE_COLLISION_Y_DOWN
 			flt.s		t1, fs3, ft0		# Speed.X < 0
 			bnez		t1, SCIENCE_COLLISION_Y_UP
+			la t0, ON_AIR
+			li t2, 1
+			sb t2, 0(t0)
 			
+				
 	
-
 			
 SCIENCE_COLLISION_X:	# Colisao horizontal								
 			fcvt.s.w	ft0, zero
@@ -124,13 +166,14 @@ SCIENCE_COLLISION_Y_DOWN:
 			lbu		t1, 0(t2)
 			beqz		t1, COLLISION_Y_EFFECT
 			
-			
 				#Sem colisao significa que esta flutuando e a gravidade começa a fazer efeito
 				la t0, ON_AIR
 				lb t2, 0(t0)
 				bne t2, zero, ON_AIR_J	#Se igual a zero passa a ser um
 				li t2, 1
 				sb t2, 0(t0)
+				li t2, -1
+				fcvt.s.w  fs3, t2			
 				ON_AIR_J:
 				
 			
@@ -411,7 +454,7 @@ SCIENCE_COLLISION_X_L:	fadd.s		ft0, ft0, ft7		# ft0 = y
 			
 
 			ret
-			#j		PHYSICS.COLL.Y
+
 
 
 
@@ -420,8 +463,11 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			ret	
 
 	HIT_FLOOR:	
+			la t0, JUMP
+			sb zero,0(t0)
 			
-			
+			la t0, JUMP_BOOST_LIMIT
+			sb zero,0(t0)
 			
 			
 			fcvt.s.w	ft0, zero
@@ -436,7 +482,7 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			lw t1, 4(t0)			#y
 			addi t1, t1, 4
 			sh t1, 4(t0)		
-			
+			fcvt.s.w fs3, zero 
 			#Confere nova posicao
 			lh t1,0(a2)	
 			add 		t2, t2, t1
@@ -448,7 +494,7 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			HIT_FLOOR_DOWN:	
 			la 		t0, ON_AIR
 			sb 		zero, 0(t0)	#Houve colisao de chao, logo, n esta mais flutuando
-
+							
 			#muda posicao player		
 			la t0, PLAYER_POS		
 			lw t1, 4(t0)			#y
@@ -470,7 +516,7 @@ COLLISION_X_EFFECT:
 			beq		t1, t3, HIT_WALL
 			
 			ret	
-
+			
 
 	HIT_WALL:	fcvt.s.w 	ft0, zero
 			flt.s		t1, ft0, fs2		# Speed.X > 0

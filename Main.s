@@ -30,11 +30,11 @@ PLAYER_SIZE:	.half 22, 48	#tamanho do Ritcher
 MAIN:
 # Open MAPA file	
 			#create stack
-			addi	sp,sp,-480
+			#addi	sp,sp,-1480
 			#save s10
-			sw	s10,440(sp)
+			#sw	s10,1480(sp)
 			#update s10
-			addi	s10,sp,480	
+			#addi	s10,sp,1480	
 			
 			la		t0, PLAYER_POS
 			flw		fs0, 0(t0)		# fs0 = char x
@@ -67,29 +67,27 @@ MAIN_LOOP:		# O framerate de 60 fps
 			#Se for 60 FPS, por exemplo, 1 segundo / 60 = 0.01666, ou 16 ms#
 			csrr		t0, 3073		# t0 = tempo atual
 			sub		t0, t0, s11		# t0 = tempo atual - ultimo frame
-			li		t1, 16		# 16ms 
+			li		t1, 0		# 16ms 
 			bltu		t0, t1, MAIN_LOOP	
 
 
 			call 	KEY	#verifica teclado
+			call    GRAVITY	#SE no ar, aumenta a velocidade da gravidade
+			
+			
 			#Soma as posicoes novas da KEY
-			call GRAVITY
-			
-			
-			
 			la t0, PLAYER_POS
 			lw t1, 0(t0)			#x
-			fcvt.s.w ft0, a0
-			fmul.s ft0, ft0, fs2		#deslocamento x velocidade horizontal
+			fcvt.s.w ft1, a0
+			fmul.s ft0, ft1, fs2		#deslocamento x velocidade horizontal
 			fcvt.w.s a0, ft0
 			add t1, t1, a0
 			sh t1, 0(t0)
-			
-			
+				
 			
 			lw t1, 4(t0)			#y
-			fcvt.s.w ft0, a1
-			fmul.s ft0, ft0, fs3		#deslocamento y velocidade horizontal
+			fcvt.s.w ft1, a1
+			fmul.s ft0, ft1, fs3		#deslocamento y velocidade horizontal
 			fcvt.w.s a1, ft0
 			add t1, t1, a1
 			sh t1, 4(t0)
