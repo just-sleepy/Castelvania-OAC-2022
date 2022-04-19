@@ -74,6 +74,14 @@ MAIN_LOOP:		# O framerate de 60 fps
 			call 	KEY	#verifica teclado
 			call    GRAVITY	#SE no ar, aumenta a velocidade da gravidade
 			
+
+			#Se running == 0, entao aumentao deslocamento horizontal
+			la t0, RUNNING
+			lb t1, 0(t0)
+			beqz t1, NOT_RUNNING
+			li t0, 3
+			mul a0, a0, t0
+			NOT_RUNNING:
 			
 			#Soma as posicoes novas da KEY
 			la t0, PLAYER_POS
@@ -184,6 +192,7 @@ MAP_BACKGROUND:
 			mv	a5, s1
 			#a6 construido anteriormente
 			#a7 construido anteriormente
+
 			call	PRINT	
 			
 OFF_BACKGROUND:																								
@@ -221,8 +230,6 @@ PLAYER_PRINT:
 			la	a4, PLAYER_SIZE
 			mv	a5, s1
 			call 	STANCE
-			#li 	a6, 6
-			#li	a7, 10
 			call	PRINT	
 						
 												

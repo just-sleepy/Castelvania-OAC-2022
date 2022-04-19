@@ -1,13 +1,14 @@
 .data
 ON_AIR:		.byte 1 #(0 = no chao, 1 = no ar)
 JUMP:		.byte 0 #(0 = jump not pressed, 1 = jump pressed)
-JUMP_BOOST_LIMIT: .byte 0 #(so pode ser usado 3 vezes)
+JUMP_BOOST_LIMIT: .byte 0 #(so pode ser usado 12 vezes)
 v:		.string "debugar "
 
 .text
 
-.eqv MAX_GRAV 	10
-.eqv BOOST_LIMIT 24
+.eqv MAX_GRAV 		10
+.eqv BOOST_LIMIT 	12
+.eqv JUMP_H		-4
 ###################### PROCEDIMENTO SCIENCE #####################
 #	ARGUMENTOS:						#
 #		a0 = posicao setor				#
@@ -27,11 +28,12 @@ GRAVITY:		la t0, ON_AIR
 			beq t1, t3, GRAV_J	#se ultrapassar a gravidade maxima 
 			li t1, 1
 			fcvt.s.w  ft1, t1
-			li t2, 4
+			li t2, 2
 			fcvt.s.w ft2, t2
-			fdiv.s ft1, ft1, ft2	#ft1 = 1/4 = 0.25
+			fdiv.s ft1, ft1, ft2	#ft1 = 1/2 = 0.5
 			fadd.s fs3, fs3, ft1	#velocidade vertical += 0.25 (AUMENTA A GRAVIDADE APESAR DE POSITIVO)
 			GRAV_J:
+			li a0, 1
 			li a1, 1
 			la t0, JUMP
 			lb t1, 0(t0)
@@ -43,6 +45,7 @@ GRAVITY:		la t0, ON_AIR
 			la t0, JUMP
 			lb t1, 0(t0)
 			beqz t1, NOT_JUMP #Se t1 estiver zerado, não pula
+			li t0, 0	#Reseta velocidade
 			j JUMPING
 			
 			NOT_JUMP:
@@ -59,10 +62,12 @@ JUMP_BOOST:		la t0, JUMP_BOOST_LIMIT
 			ret
 			LIMIT_NOT_EXC:
 			sb t1,0(t0)	
+			li t0, 0	#Reseta velocidade
+			
 						
 			
 JUMPING:		li a1, 1
-			li t0, -3
+			li t0, JUMP_H	#Reseta velocidade
 			fcvt.s.w  fs3, t0
 			la t0, ON_AIR
 			li t1, 1
@@ -466,17 +471,15 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			la t0, JUMP
 			sb zero,0(t0)
 			
-			la t0, JUMP_BOOST_LIMIT
-			sb zero,0(t0)
-			
-			
 			fcvt.s.w	ft0, zero
 			flt.s		t1, ft0, fs3		# Speed.X > 0
 			bnez		t1, HIT_FLOOR_DOWN
 			flt.s		t1, fs3, ft0		# Speed.X < 0
 			bnez		t1, HIT_FLOOR_UP
 			
-			HIT_FLOOR_UP:	
+			HIT_FLOOR_UP:
+			
+			
 			#muda posicao player		
 			la t0, PLAYER_POS		
 			lw t1, 4(t0)			#y
@@ -490,11 +493,15 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			beqz		t1,  HIT_FLOOR_DOWN
 			ret	
 			
+			
 										
 			HIT_FLOOR_DOWN:	
 			la 		t0, ON_AIR
 			sb 		zero, 0(t0)	#Houve colisao de chao, logo, n esta mais flutuando
-							
+			
+			la t0, JUMP_BOOST_LIMIT
+			sb zero,0(t0)			#Reseta o boost do pulo				
+															
 			#muda posicao player		
 			la t0, PLAYER_POS		
 			lw t1, 4(t0)			#y

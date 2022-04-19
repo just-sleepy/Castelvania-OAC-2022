@@ -12,7 +12,7 @@ KEY:
 												
 		csrr		t5, 3073														
 		# O framerate de 60 fps
-			#Se for 60 FPS, por exemplo, 1 segundo / 60 = 0.01666, ou 16 ms#
+		#Se for 60 FPS, por exemplo, 1 segundo / 60 = 0.01666, ou 16 ms#
 																
 		K:																
 																					
@@ -32,7 +32,7 @@ KEY:
 KEY_END:
 		csrr		t0, 3073		# t0 = tempo atual
 		sub		t0, t0, t5		# t0 = tempo atual - ultimo frame
-		li		t1, 16		#16ms 
+		li		t1, 16	#16ms 
 		
 		#li 		t2, 0
 		#addi 		t2, t6, 400		#s10 em posicao 0
@@ -62,6 +62,8 @@ LOOP_BUFFER:
   		beq		t0, t1, KEY_S_VERIFY
   		li		t1, 'd'
 		beq		t0, t1, KEY_D_VERIFY
+		li		t1, 'r'
+		beq		t0, t1, KEY_R_VERIFY
 		j LOOP_BUFFER
 		
     		KEY_W_VERIFY:		
@@ -80,13 +82,12 @@ LOOP_BUFFER:
 			li t5, 1
 			j LOOP_BUFFER
 			
+		KEY_R_VERIFY:		
+			li s5, 1
+			j LOOP_BUFFER	
 			
 			
-		
-#KEY_NONE:	li a0, 0
-#		li a1, 0	
-#		ret		
-		
+
 #se soma valores que apos o call Key serao somados na posicao do personagem(movimentacao em pixels) sem fisica de velocidade inclusa
 #a0 = x
 #a1 = y	
@@ -94,8 +95,15 @@ SELECT_KEYS:
 bne t3, zero,  STILL_MOVING
 bne t5, zero, STILL_MOVING
 la t0, MOVING		#Determina q o personagem nao se move
-li t1, 0
-sb t1, 0(t0)
+sb zero, 0(t0)
+
+la t0, ON_AIR
+lb t1, 0(t0)
+li t0, 1
+beq t1, t0, MOMENTO 		#Se t1 igual a zero, significa que nao esta no ar e nao precisa de momento
+fcvt.s.w fs2, zero
+MOMENTO: #Nao zera a velocidade de fs2
+
 la t0, PLAYER_STANCE		
 lh t1, 0(t0)
 li a0, 16
@@ -135,12 +143,12 @@ KEY_A:		beq t3, zero, KEY_S 	#se tecla nao esta pressionada vai para proximo
 KEY_S:		beq t4, zero, KEY_D 	#se tecla nao esta pressionada vai para proximo	
 		addi a0, a0, 0	#movimento horizontal
 		addi a1, a1, 1	#movimento vertical
-		li t2, 2
+		li t2, -2
 		fcvt.s.w fs3, t2	#velocidade vertical
 		
 		
 
-KEY_D:		beq t5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proximo	
+KEY_D:		beq t5, zero, KEY_R 	#se tecla nao esta pressionada vai para proximo	
 		addi a0, a0, 1	#movimento horizontal
 		li t2, 2
 		fcvt.s.w fs2, t2	#velocidade horizontal
@@ -150,7 +158,17 @@ KEY_D:		beq t5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proxim
 		
 		la t0, PLAYER_LOOK      #Olhando para a direita
 		sb zero, 0(t0)
-		
+
+KEY_R:		beq s5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proximo
+		la t0, RUNNING
+		lb t1, 0(t0)
+		beqz t1, START_RUNNING		#Se estiver correndo, para de correr, e vice versa
+		sb zero, 0(t0)
+		ret 
+		START_RUNNING:
+		li t1, 1
+		sb t1, 0(t0)		
+												
 FINISH_KEY:
 	ret		
 		
