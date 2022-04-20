@@ -45,6 +45,7 @@ BUFFER_MOVEMENTS:
 		li t3, 0	#se tecla a foi pressionada(0 = False, 1 = True)
 		li t4, 0	#se tecla s foi pressionada(0 = False, 1 = True)	
 		li t5, 0	#se tecla d foi pressionada(0 = False, 1 = True)
+		li s5, 0
 LOOP_BUFFER:	
 			
 		#se confere todas as teclas pressionadas, e sem repetir, determina qual seram ativadas	
@@ -159,19 +160,23 @@ KEY_D:		beq t5, zero, KEY_R 	#se tecla nao esta pressionada vai para proximo
 		la t0, PLAYER_LOOK      #Olhando para a direita
 		sb zero, 0(t0)
 
+
 KEY_R:		beq s5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proximo
 		la t0, RUNNING
 		lb t1, 0(t0)
-		beqz t1, START_RUNNING		#Se estiver correndo, para de correr, e vice versa
+		li t2, 1
+		beq t1, zero, START_RUNNING		#Se estiver correndo, para de correr, e vice versa
+		bne t1, zero, STOP_RUNNING
+		li a1, 4
+		j FINISH_KEY
+		
+		STOP_RUNNING:
 		sb zero, 0(t0)
-		ret 
+		j FINISH_KEY
+		
 		START_RUNNING:
 		li t1, 1
 		sb t1, 0(t0)		
 												
 FINISH_KEY:
-	ret		
-		
-		
-		
-							
+	ret	

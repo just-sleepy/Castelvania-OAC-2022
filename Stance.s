@@ -2,7 +2,7 @@
 PLAYER_LOOK:    .byte 0 	#(0: olhando para direita, 1: olhando para esquerda)
 PLAYER_STANCE:	.half 0
 MOVING:		.byte 0
-RUNNING:	.byte 0		#(0: andando, 1: correndo)
+RUNNING:	.byte 1		#(0: andando, 1: correndo)
 V: 		.string " aaaaaaaa "
 .text
 
@@ -18,11 +18,23 @@ STANCE:
 	
 	li a6, 0
 	li a7, 0
+	
 		
+				
 	#Jump
 	la t0, JUMP
 	lb t2, 0(t0)
 	bne t2, zero, JUMP_A	#se jump = 1 ou stance < 0
+	
+	#Running
+	la t0, RUNNING
+	lb t2, 0(t0)
+	beqz t2, RUN_JJ	#If RUNNING != 0, comeca animacao de correr
+	la t0, MOVING
+	lb t2, 0(t0)
+	bne t2, zero, RUN
+					
+	RUN_JJ:
 	
 	#Walk
 	la t0, MOVING
@@ -33,7 +45,7 @@ STANCE:
 	#Stand
 	li t0, 16
 	bge t0, t1, STAND
-
+	
 STAND:
 
 bge zero, t1, Stance0
@@ -48,60 +60,60 @@ bge t0, t1, Stance4
 ret
 #Determina a posicao do sprite de acordo com sua stance 
 	Stance0:
-	addi a6, a6, 8
-	li a7, 10
+	addi a6, a6, 0
+	li a7, 9
 	lb t0, 0(t4)
 	beq t0, zero,Stance0_J
-	addi a6, a6, 912
-	addi a7, a7, -1
+	addi a6, a6, 917
+	addi a7, a7, -2
 		Stance0_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 	
 	Stance1:
-	addi a6, a6, 30
-	li a7, 10
+	addi a6, a6, 31
+	li a7, 9
 	lb t0, 0(t4)
 	beq t0, zero,Stance1_J
-	addi a6, a6, 868
-	addi a7, a7, -1
+	addi a6, a6, 855
+	addi a7, a7, -2
 		Stance1_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 
 	Stance2:
-	addi a6, a6, 52
-	li a7, 10
+	addi a6, a6, 63
+	li a7, 9
 	lb t0, 0(t4)
 	beq t0, zero,Stance2_J
-	addi a6, a6, 824
-	addi a7, a7, -1
+	addi a6, a6, 791
+	addi a7, a7, -2
 		Stance2_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 
 	Stance3:
-	addi a6, a6, 74
-	li a7, 10
+	addi a6, a6, 99
+	li a7, 9
 	lb t0, 0(t4)
 	beq t0, zero,Stance3_J
-	addi a6, a6, 780
-	addi a7, a7, -1
+	addi a6, a6, 719
+	addi a7, a7, -2
 		Stance3_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 
 	Stance4:
-	addi a6, a6, 8
-	li a7, 10
+	addi a6, a6, 0
+	li a7, 9
 	lb t0, 0(t4)
 	beq t0, zero,Stance4_J
-	addi a6, a6, 912
-	addi a7, a7, -1
+	addi a6, a6, 917
+	addi a7, a7, -2
 		Stance4_J:
 		li t1, 0
 		sh t1, 0(t3)
@@ -121,11 +133,9 @@ bge t1, t0, WALK_INIT
 li t1, 17
 sh t1, 0(t3)
 
-la t0, RUNNING
-lb t2, 0(t0)
-bnez t2, RUNNING_INIT	#If RUNNING != 0, comeca animacao de correr																					
+																					
 																																																																		
-WALK_INIT:																																																																		
+WALK_INIT:																																																																																																																																																																																																			
 li t0, 20
 bge t0, t1, Walk0
 li t0, 24
@@ -144,110 +154,111 @@ li t0, 48
 bge t0, t1, Walk7
 li t0, 52
 bge t0, t1, Walk8
+j RUN
 ret
 	
 	Walk0:
-	addi a6, a6, 5
+	addi a6, a6, 1
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk0_J
-	addi a6, a6, 917
-	addi a7, a7, -2
+	addi a6, a6, 918
+	addi a7, a7, -3
 		Walk0_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 	
 	Walk1:
-	addi a6, a6, 39
+	addi a6, a6, 33
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk1_J
-	addi a6, a6, 849
-	addi a7, a7, -2
+	addi a6, a6, 854
+	addi a7, a7, -3
 		Walk1_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 
 	Walk2:
-	addi a6, a6, 69
+	addi a6, a6, 62
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk2_J
 	addi a6, a6, 795
-	addi a7, a7, -2
+	addi a7, a7, -3
 		Walk2_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 
 	Walk3:
-	addi a6, a6, 101
+	addi a6, a6, 92
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk3_J
-	addi a6, a6, 728
-	addi a7, a7, -2
+	addi a6, a6, 731
+	addi a7, a7, -3
 		Walk3_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 	Walk4:
-	addi a6, a6, 131
+	addi a6, a6, 129
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk4_J
-	addi a6, a6, 664
-	addi a7, a7, -2
+	addi a6, a6, 660
+	addi a7, a7, -3
 		Walk4_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 																																																																					
 	Walk5:
-	addi a6, a6, 167
+	addi a6, a6, 159
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk5_J
-	addi a6, a6, 595
-	addi a7, a7, -2
+	addi a6, a6, 603
+	addi a7, a7, -3
 		Walk5_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 	
 	Walk6:
-	addi a6, a6, 196
+	addi a6, a6, 188
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk6_J
-	addi a6, a6, 539
-	addi a7, a7, -2
+	addi a6, a6, 544
+	addi a7, a7, -3
 		Walk6_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 	
 	Walk7:
-	addi a6, a6, 221
+	addi a6, a6, 215
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk7_J
-	addi a6, a6, 487
-	addi a7, a7, -2
+	addi a6, a6, 490
+	addi a7, a7, -3
 		Walk7_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 	
 	Walk8:
-	addi a6, a6, 5
+	addi a6, a6, 1
 	li a7, 147
 	lb t0, 0(t4)
 	beq t0, zero,Walk8_J
-	addi a6, a6, 917
-	addi a7, a7, -2
+	addi a6, a6, 918
+	addi a7, a7, -3
 		Walk8_J:
 		li t1, 17
 		sh t1, 0(t3)
@@ -255,50 +266,54 @@ ret
 	
 
 	
-		
+RUN:	
+li t0, 52		#Se a stance for menor ou igual a 16, inicia a stance de correr em 17
+bge t1, t0, RUNNING_INIT
+li t1, 53
+sh t1, 0(t3)		
 			
 				
 RUNNING_INIT:																																																																		
-li t0, 20
+li t0, 55
 bge t0, t1, Run0
-li t0, 24
+li t0, 58
 bge t0, t1, Run1
-li t0, 28
+li t0, 61
 bge t0, t1, Run2
-li t0, 32
+li t0, 65
 bge t0, t1, Run3
-li t0, 36
-#bge t0, t1, Run4
-li t0, 40
-#bge t0, t1, Run5
-li t0, 44
-#bge t0, t1, Run6
-li t0, 48
-#bge t0, t1, Run7
-li t0, 52
-#bge t0, t1, Run8
+li t0, 68
+bge t0, t1, Run4
+li t0, 71
+bge t0, t1, Run5
+li t0, 74
+bge t0, t1, Run6
+li t0, 77
+bge t0, t1, Run7
+li t0, 80
+bge t0, t1, Run8
 ret					
 						
 							
 								
 	Run0:
-	addi a6, a6, 3
-	li a7, 200
+	addi a6, a6, 1
+	li a7, 195
 	lb t0, 0(t4)
 	beq t0, zero,Run0_J
-	addi a6, a6, 922
-	addi a7, a7, -1
+	addi a6, a6, 918
+	addi a7, a7, -2
 		Run0_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
 	
 	Run1:
-	addi a6, a6, 31
-	li a7, 200
+	addi a6, a6, 36
+	li a7, 195
 	lb t0, 0(t4)
 	beq t0, zero,Run1_J
-	addi a6, a6, 849
+	addi a6, a6, 845
 	addi a7, a7, -2
 		Run1_J:
 		addi t1, t1, 1
@@ -306,11 +321,11 @@ ret
 		ret
 
 	Run2:
-	addi a6, a6, 69
-	li a7, 200
+	addi a6, a6, 72
+	li a7, 195
 	lb t0, 0(t4)
 	beq t0, zero,Run2_J
-	addi a6, a6, 795
+	addi a6, a6, 774
 	addi a7, a7, -2
 		Run2_J:
 		addi t1, t1, 1
@@ -318,23 +333,76 @@ ret
 		ret
 
 	Run3:
-	addi a6, a6, 101
-	li a7, 199
+	addi a6, a6, 110
+	li a7, 195
 	lb t0, 0(t4)
 	beq t0, zero,Run3_J
-	addi a6, a6, 728
+	addi a6, a6, 699
 	addi a7, a7, -2
 		Run3_J:
-		li t1, 17
+		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret									
 										
-																										
-																		
-																			
-																				
-																					
-																						
+	Run4:
+	addi a6, a6, 141
+	li a7, 195
+	lb t0, 0(t4)
+	beq t0, zero,Run4_J
+	addi a6, a6, 637
+	addi a7, a7, -2
+		Run4_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		ret																									
+																	
+	Run5:
+	addi a6, a6, 178
+	li a7, 195
+	lb t0, 0(t4)
+	beq t0, zero,Run5_J
+	addi a6, a6, 565
+	addi a7, a7, -2
+		Run5_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		ret																			
+	
+	Run6:
+	addi a6, a6, 217
+	li a7, 195
+	lb t0, 0(t4)
+	beq t0, zero,Run6_J
+	addi a6, a6, 488
+	addi a7, a7, -2
+		Run6_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		ret																																										
+	
+	Run7:
+	addi a6, a6, 255
+	li a7, 195
+	lb t0, 0(t4)
+	beq t0, zero,Run7_J
+	addi a6, a6, 411
+	addi a7, a7, -2
+		Run7_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		ret																						
+	
+	Run8:
+	addi a6, a6, 1
+	li a7, 195
+	lb t0, 0(t4)
+	beq t0, zero,Run8_J
+	addi a6, a6, 918
+	addi a7, a7, -2
+		Run8_J:
+		li t1, 53
+		sh t1, 0(t3)
+		ret																																																																																																																														
 																								
 JUMP_A:	
 
@@ -379,11 +447,11 @@ ret
 
 
 	Jump0:
-	addi a6, a6, 7		
+	addi a6, a6, 1		
 	li a7, 98
 	lb t0, 0(t4)
 	beq t0, zero,Jump0_J
-	addi a6, a6, 914
+	addi a6, a6, 915
 	addi a7, a7, -2
 		Jump0_J:
 		addi t1, t1, -1
@@ -391,11 +459,11 @@ ret
 		ret
 		
 	Jump1:
-	addi a6, a6, 35		
+	addi a6, a6, 30		
 	li a7, 98
 	lb t0, 0(t4)
 	beq t0, zero,Jump1_J
-	addi a6, a6, 859
+	addi a6, a6, 856
 	addi a7, a7, -2
 		Jump1_J:
 		li t1, -9
@@ -403,11 +471,11 @@ ret
 		ret	
 
 	Jump2:
-	addi a6, a6, 61		
+	addi a6, a6, 63		
 	li a7, 98
 	lb t0, 0(t4)
 	beq t0, zero,Jump2_J
-	addi a6, a6, 807
+	addi a6, a6, 784
 	addi a7, a7, -2
 		Jump2_J:
 		addi t1, t1, -1
@@ -415,11 +483,11 @@ ret
 		ret	
 
 	Jump3:
-	addi a6, a6, 84	
+	addi a6, a6, 107
 	li a7, 98
 	lb t0, 0(t4)
 	beq t0, zero,Jump3_J
-	addi a6, a6, 761
+	addi a6, a6, 701
 	addi a7, a7, -2
 		Jump3_J:
 		addi t1, t1, -1
@@ -427,11 +495,11 @@ ret
 		ret	
 	
 	Jump4:
-	addi a6, a6, 108
+	addi a6, a6, 142
 	li a7, 98
 	lb t0, 0(t4)
 	beq t0, zero,Jump4_J
-	addi a6, a6, 713
+	addi a6, a6, 631
 	addi a7, a7, -2
 		Jump4_J:
 		addi t1, t1, -1
@@ -439,11 +507,11 @@ ret
 		ret	
 		
 	Jump5:
-	addi a6, a6, 136
+	addi a6, a6, 192
 	li a7, 98
 	lb t0, 0(t4)
 	beq t0, zero,Jump5_J
-	addi a6, a6, 655
+	addi a6, a6, 532
 	addi a7, a7, -2
 		Jump5_J:
 		addi t1, t1, -1
@@ -451,13 +519,15 @@ ret
 		ret
 		
 	Falling:
-	addi a6, a6, 166
+	addi a6, a6, 237
 	li a7, 98
 	lb t0, 0(t4)
 	beq t0, zero,Falling_J
-	addi a6, a6, 595
+	addi a6, a6, 443
 	addi a7, a7, -2
 		Falling_J:
 		li t1, -23
 		sh t1, 0(t3)
 		ret					
+
+	

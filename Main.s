@@ -4,7 +4,7 @@
 
 .data 
 PLAYER_POS:	.word 380, 900	# posicao atual do player
-PLAYER_SIZE:	.half 22, 48	#tamanho do Ritcher
+PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 
 
 
@@ -74,14 +74,14 @@ MAIN_LOOP:		# O framerate de 60 fps
 			call 	KEY	#verifica teclado
 			call    GRAVITY	#SE no ar, aumenta a velocidade da gravidade
 			
-
-			#Se running == 0, entao aumentao deslocamento horizontal
+			#Confere se está correndo para aumentar velocidade
 			la t0, RUNNING
 			lb t1, 0(t0)
-			beqz t1, NOT_RUNNING
-			li t0, 3
-			mul a0, a0, t0
-			NOT_RUNNING:
+			beq t1, zero, NO_RUN	#Se igual a zero, nao esta correndo
+			li t1, 2
+			mul a0, a0, t1
+			NO_RUN:
+			
 			
 			#Soma as posicoes novas da KEY
 			la t0, PLAYER_POS
