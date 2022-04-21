@@ -24,7 +24,8 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 # s1 = frame
 # s3 = mapa x
 # s4 = mapa y
-#s10 = buffer control
+#s9 = enemies queue inicial
+#s10 = enemies queue
 #s11 = frame control
 
 MAIN:
@@ -62,6 +63,14 @@ MAIN:
 			call SWITCH_FRAME
 			
 			
+			
+			li a1, 600
+			li a2, 900
+			call ADD_GHOST
+			
+			li a1, 390
+			li a2, 875
+			call ADD_GHOST
 			
 MAIN_LOOP:		# O framerate de 60 fps
 			#Se for 60 FPS, por exemplo, 1 segundo / 60 = 0.01666, ou 16 ms#
@@ -192,7 +201,6 @@ MAP_BACKGROUND:
 			mv	a5, s1
 			#a6 construido anteriormente
 			#a7 construido anteriormente
-
 			call	PRINT	
 			
 OFF_BACKGROUND:																								
@@ -232,9 +240,50 @@ PLAYER_PRINT:
 			call 	STANCE
 			call	PRINT	
 						
-												
+ENEMY_PRINT:		
+			li	a7, 1024
+			la	a0, Enemy
+			li	a1, 0
+			ecall
+			mv t6, sp		#guarda valor 
+ENEMY_PRINT_LOOP:	beq s10, zero, OUT_ENEMY_LOOP		
+			
+			
+			call ENEMIES
+			li t0, -1
+			beq a1, t0, ENEMY_PRINT_LOOP#Se nao esta na tela, volta loop 	
+			#a1 determinado em proc
+			#a2 determinado em proc	
+			la a3, Enemy_size
+			#a4 determinado em proc
+			mv	a5, s1
+			#li a5, 1
+			#li a5, 0
+			#a6 determinado em proc
+			#a7 determinado em proc
+			call PRINT
+			
+			
+			j ENEMY_PRINT_LOOP
+OUT_ENEMY_LOOP:																											
+#Restaura s10
+beq t6, sp, FIM_MAIN_LOOP
+la t1, QUEUE_ENEMIES
+
+OUT_ENEMY_LOOP_J:
+addi 	s10, s10, 4		#Proxima posicao
+add t1, t1, s10
+#pop()
+lw	t0, 0(sp)	#armazena 
+addi 	sp, sp, 4
+sw 	t0, 0(t1)
+j OUT_ENEMY_LOOP
+	
+	
 						
-#FIM_MAIN_LOOP		
+											
+																					
+FIM_MAIN_LOOP:		
 call SWITCH_FRAME		#mostra a nova tela	
 beq s1, zero,FRAME_1
 li s1, 0
@@ -258,3 +307,4 @@ ecall
 .include "Keyboard.s"
 .include "Stance.s"
 .include "Pure_science.s"
+.include "Enemies.s"

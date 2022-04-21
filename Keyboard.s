@@ -33,10 +33,6 @@ KEY_END:
 		csrr		t0, 3073		# t0 = tempo atual
 		sub		t0, t0, t5		# t0 = tempo atual - ultimo frame
 		li		t1, 16	#16ms 
-		
-		#li 		t2, 0
-		#addi 		t2, t6, 400		#s10 em posicao 0
-		#beq 		s10, t2, BUFFER_MOVEMENTS
 		bltu		t0, t1, K
 					
 									

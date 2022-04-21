@@ -6,9 +6,7 @@ v:		.string "debugar "
 
 .text
 
-.eqv MAX_GRAV 		10
-.eqv BOOST_LIMIT 	12
-.eqv JUMP_H		-4
+
 ###################### PROCEDIMENTO SCIENCE #####################
 #	ARGUMENTOS:						#
 #		a0 = posicao setor				#

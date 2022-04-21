@@ -6,7 +6,6 @@ RUNNING:	.byte 1		#(0: andando, 1: correndo)
 V: 		.string " aaaaaaaa "
 .text
 
-.eqv BOOST_LIMIT 	12
 
 STANCE:
 	la t3, PLAYER_STANCE
@@ -276,21 +275,21 @@ sh t1, 0(t3)
 RUNNING_INIT:																																																																		
 li t0, 55
 bge t0, t1, Run0
-li t0, 58
+li t0, 57
 bge t0, t1, Run1
-li t0, 61
+li t0, 60
 bge t0, t1, Run2
-li t0, 65
+li t0, 64
 bge t0, t1, Run3
-li t0, 68
+li t0, 67
 bge t0, t1, Run4
-li t0, 71
+li t0, 70
 bge t0, t1, Run5
-li t0, 74
+li t0, 73
 bge t0, t1, Run6
-li t0, 77
+li t0, 76
 bge t0, t1, Run7
-li t0, 80
+li t0, 79
 bge t0, t1, Run8
 ret					
 						

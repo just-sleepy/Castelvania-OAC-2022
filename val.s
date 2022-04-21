@@ -35,9 +35,26 @@
 .eqv OFFSET_X_HITBOX		24#88	
 .eqv OFFSET_Y_HITBOX		48#40
 
+#-------------------Science-------------------------
+.eqv MAX_GRAV 		10
+.eqv BOOST_LIMIT 	15
+.eqv JUMP_H		-4
+
+
+
+
+
+
+
+
 
 
 .data
+
+#Enemies
+Enemy:				.string 		"./Imagens/Enemies.bin"
+Enemy_size:			.half 628, 527	#sempre fazer x += 1(não sei o porque)
+
 
 
 
