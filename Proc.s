@@ -99,20 +99,136 @@ ret
 
 
 
-################### Select background #################################
+
+
+
+################### VERIFY_MAP_POS ###############################
+#	Resultado:						#
+#	s3 = posicao do mapax					#
+#	s4 = posicao do mapay					#
+#								#
+#################################################################
+
+VERIFY_MAP_POS:		
+			#Determinar x limite
+			la t0, PLAYER_POS
+			lw t1, 0(t0)			#x
+			addi	t1, t1, OFFSET_X	# a0 = char x - offset x do mapa (o mapa fica x pixels pra esquerda do personagem)
+			bge t1, zero,VERIFY_MAP_POS_JUMP #t1 > 0
+			mv t1, zero			#senao t1 = 0
+		VERIFY_MAP_POS_JUMP:
+			la t0, P1_library_size
+			lh t2, 0(t0)
+			addi t2, t2, -320		#largura maxima de x = largura do mapa - largura da tela + pos inicial
+			la t0, POS_P1_library
+			lh t3, 0(t0)			#pos inicial
+			add t2, t2, t3
+			bge t2,t1, VERIFY_MAP_POS_JUMP2		#pega o menor entre os valores
+			mv t1, t2
+		VERIFY_MAP_POS_JUMP2:
+			#Determinar x inicial
+			la t0, POS_P1_library
+			lh t2, 0(t0)			
+			bge t1, t2, VERIFY_MAP_POS_JUMP3	#se t1(camera) for menor que t2(pos inicial): mv t1, t2
+			mv t1, t2	
+		VERIFY_MAP_POS_JUMP3:
+			mv	s3, t1			# move o resultado pra s3
+				
+		
+			#Determinar y limite
+			la t0, PLAYER_POS
+			lw t1, 4(t0)			#y
+			addi t1, t1, OFFSET_X		# a0 = char x - offset x do mapa (o mapa fica x pixels pra esquerda do personagem)
+			bge t1, zero, VERIFY_MAP_POS_JUMP4 #t1 > 0
+			mv t1, zero			#senao t1 = 0
+		VERIFY_MAP_POS_JUMP4:
+			la t0, P1_library_size
+			lh t2, 2(t0)
+			addi t2, t2, -240		#largura maxima de y = largura do mapa - largura da tela + pos inicial
+			la t0, POS_P1_library
+			lh t3, 2(t0)			#pos inicial
+			add t2, t2, t3
+			bge t2,t1, VERIFY_MAP_POS_JUMP5	#pega o menor entre os valores
+			mv t1, t2
+		VERIFY_MAP_POS_JUMP5:
+			#Determinar y inicial
+			la t0, POS_P1_library
+			lh t2, 2(t0)			
+			bge t1, t2, VERIFY_MAP_POS_JUMP6	#se t1(camera) for menor que t2(pos inicial): mv t1, t2
+			mv t1, t2	
+		VERIFY_MAP_POS_JUMP6:
+			mv	s4, t1			# move o resultado pra s4
+						
+
+
+ret
+
+
+
+
+################### Select sector ###############################
+#	Resultado:						#
+#	a0 = posicao setor no mapa total			#
+#	a1 = .data da colisao do setor				#
+#	a2 = tamanho de a1 em pixels				#
+#								#
+#################################################################
+SELECT_SECTOR:
+la t0, SETOR
+lb t1, 0(t0)
+
+li t2, 1
+beq t1, t2, P1
+
+li t2, 3
+beq t1, t2, P3
+
+P1:
+la a0, POS_P1_library
+la a1, P1_Map_library
+la a2, P1_library_size
+ret
+
+P3:
+
+la a0, POS_P3_library
+la a1, P3_Map_library
+la a2, P3_library_size
+ret
+
+################### Select background ###########################
+#	Resultado:						#
 #	la a0 = setor size					#
 #	la a1 = setor posicao					#
 #	la a2 = background size					#
 #	la a3 = background posicao				#
 #	la a4 = Mapa do setor size				#
 #################################################################
+SELECT_BACKGROUND:
+la t0, SETOR
+lb t1, 0(t0)
 
+li t2, 1
+beq t1, t2, P1_BACK
+li t2, 3
+beq t1, t2, P1_BACK
 
+P1_BACK:
+la t0, BACKGROUND
+li t1, 1	#Valor 1 pois tem background	
+sb t1, 0(t0)
 
+la a0, P1_library_size				
+la a1, POS_P1_library				
+la a2, Backgorund_library_size					
+la a3, POS_Backgorund_library				
+la a4, FILE_MAP_SIZE
+ret
 
-
-
-
+P3_BACK:
+la t0, BACKGROUND
+sb zero, 0(t0)
+ret
 ################### Background #################################
 #	la a0 = setor size					#
 #	la a1 = setor posicao					#
@@ -150,9 +266,6 @@ PREPARE_BACKGROUND:
 			addi t1, t1, -320
 			mv a6, t1
 			J_BACKGROUND:
-
-			
-			
 
 			#Y
 			lh t1, 2(a0)

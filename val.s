@@ -65,7 +65,7 @@ HITBOX:				.string 		"./Imagens/Map_matriz.bin"
 
 
 #MAPAS:
-BACKGROUND:			.byte 1	#(1 para que tem background e 0 que nao tem)
+BACKGROUND:			.byte 0	#(1 para que tem background e 0 que nao tem)
 
 #Ritcher
 Ritcher:			.string 		"./Imagens/Ritcher.bin"
@@ -75,6 +75,12 @@ Ritcher_size:			.half 952, 896	#sempre fazer x += 1(não sei o porque)
 Map_library:			.string 		"./Imagens/Map_library.bin"
 FILE_MAP_SIZE:			.half 4356, 2860	#sempre fazer x += 1(não sei o porque)
 
+#--------------------setores------------------------------------------------
+SETOR: 				.byte 3
+NEW_SECTOR:			.byte 0
+
+NEW_PLAYER_POS:			.word 380, 900	# posicao nova para proximo loop caso haja transicao
+
 #PARTE1
 Backgorund_library_size: 	.half  640, 485
 POS_Backgorund_library:		.half 1215, 1141
@@ -83,6 +89,14 @@ P1_library_size:		.half 1280, 974
 POS_P1_library:			.half 113, 48
 .include "./Imagens/setores_matriz/P1_Map_library.data"
 
+
+#PARTE3
+#Backgorund_library_size_P3: 	.half  640, 485
+#POS_Backgorund_library_P3:	.half 1215, 1141
+
+P3_library_size:		.half 256, 719
+POS_P3_library:			.half 2186, 304
+.include "./Imagens/setores_matriz/P3_Map_library.data"
 
 #Area do mapa e da tela
 SCREEN_SIZE:		.half 320, 240

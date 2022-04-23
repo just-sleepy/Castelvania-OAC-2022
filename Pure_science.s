@@ -2,10 +2,10 @@
 ON_AIR:		.byte 1 #(0 = no chao, 1 = no ar)
 JUMP:		.byte 0 #(0 = jump not pressed, 1 = jump pressed)
 JUMP_BOOST_LIMIT: .byte 0 #(so pode ser usado 12 vezes)
+
 v:		.string "debugar "
 
 .text
-
 
 ###################### PROCEDIMENTO SCIENCE #####################
 #	ARGUMENTOS:						#
@@ -462,7 +462,9 @@ SCIENCE_COLLISION_X_L:	fadd.s		ft0, ft0, ft7		# ft0 = y
 
 
 COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
-			beq		t1, t3, HIT_FLOOR		
+			beq		t1, t3, HIT_FLOOR
+			li		t3, 148
+			beq		t1, t3, TRANSITION_P1B_P3B		
 			ret	
 
 	HIT_FLOOR:	
@@ -519,7 +521,8 @@ COLLISION_X_EFFECT:
 			li	 	a1, 0
 			li		t3, 0			# wall = 0
 			beq		t1, t3, HIT_WALL
-			
+			li		t3, 148
+			beq		t1, t3, TRANSITION_P1B_P3B
 			ret	
 			
 
@@ -554,3 +557,34 @@ COLLISION_X_EFFECT:
 			lbu		t1, 0(t2)
 			beqz		t1,  HIT_WALL_L	
 			ret 	
+
+	
+	TRANSITION_P1B_P3B:
+	la t0, SETOR
+	lb t1, 0(t0)
+	li t0, 1	#Setor P1
+	beq t1, t0, P1B_TO_P3B
+	li t0, 3	#Setor P3
+	beq t1, t0, P3B_TO_P1B
+	
+		P1B_TO_P3B:
+		la t0, NEW_SECTOR
+		li t1, 3
+		sb t1, 0(t0)
+		la t0, NEW_PLAYER_POS	#POSICAO_INICIAL=2194 x 648
+		li t1, 2194
+		sw t1, 0(t0)	#x
+		li t1, 648
+		sw t1, 4(t0)	#y
+		
+		P3B_TO_P1B:
+		la t0, NEW_SECTOR
+		li t1, 1
+		sb t1, 0(t0)
+		la t0, NEW_PLAYER_POS	#POSICAO_INICIAL=1355 x 392
+		li t1, 1355
+		sw t1, 0(t0)	#x
+		li t1, 392
+		sw t1, 4(t0)	#y
+		ret	
+		

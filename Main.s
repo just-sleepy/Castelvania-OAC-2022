@@ -3,7 +3,8 @@
 
 
 .data 
-PLAYER_POS:	.word 380, 900	# posicao atual do player
+PLAYER_POS:	.word 2280, 600	# posicao atual do player/inicial
+#PLAYER_POS:	.word 380, 900	# posicao atual do player/inicial
 PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 
 
@@ -64,13 +65,15 @@ MAIN:
 			
 			
 			
-			li a1, 600
-			li a2, 900
-			call ADD_GHOST
+			#li a1, 600
+			#li a2, 450
+			#call ADD_GHOST
+
+			#li a1, 450
+			#li a2, 600
+			#call ADD_GHOST
 			
-			li a1, 390
-			li a2, 875
-			call ADD_GHOST
+			
 			
 MAIN_LOOP:		# O framerate de 60 fps
 			#Se for 60 FPS, por exemplo, 1 segundo / 60 = 0.01666, ou 16 ms#
@@ -120,76 +123,18 @@ MAIN_LOOP:		# O framerate de 60 fps
 			
 			fcvt.s.w fs0, t1
 			fcvt.s.w fs1, t2
-				
-			la a0, POS_P1_library
-			la a1, P1_Map_library
-			la a2, P1_library_size
-			call SCIENCE_COLLISION
 			
+					
+			call SELECT_SECTOR #select sector para colisao
+			call SCIENCE_COLLISION
 
-#calcular a camera do jogador como visao do mapa levando em conta 
-#a posicao central do jogador
-VERIFY_MAP_POS:		
-			#Determinar x limite
-			la t0, PLAYER_POS
-			lw t1, 0(t0)			#x
-			addi	t1, t1, OFFSET_X	# a0 = char x - offset x do mapa (o mapa fica x pixels pra esquerda do personagem)
-			bge t1, zero,VERIFY_MAP_POS_JUMP #t1 > 0
-			mv t1, zero			#senao t1 = 0
-		VERIFY_MAP_POS_JUMP:
-			la t0, P1_library_size
-			lh t2, 0(t0)
-			addi t2, t2, -320		#largura maxima de x = largura do mapa - largura da tela + pos inicial
-			la t0, POS_P1_library
-			lh t3, 0(t0)			#pos inicial
-			add t2, t2, t3
-			bge t2,t1, VERIFY_MAP_POS_JUMP2		#pega o menor entre os valores
-			mv t1, t2
-		VERIFY_MAP_POS_JUMP2:
-			#Determinar x inicial
-			la t0, POS_P1_library
-			lh t2, 0(t0)			
-			bge t1, t2, VERIFY_MAP_POS_JUMP3	#se t1(camera) for menor que t2(pos inicial): mv t1, t2
-			mv t1, t2	
-		VERIFY_MAP_POS_JUMP3:
-			mv	s3, t1			# move o resultado pra s3
-				
-		
-			#Determinar y limite
-			la t0, PLAYER_POS
-			lw t1, 4(t0)			#y
-			addi t1, t1, OFFSET_X		# a0 = char x - offset x do mapa (o mapa fica x pixels pra esquerda do personagem)
-			bge t1, zero, VERIFY_MAP_POS_JUMP4 #t1 > 0
-			mv t1, zero			#senao t1 = 0
-		VERIFY_MAP_POS_JUMP4:
-			la t0, P1_library_size
-			lh t2, 2(t0)
-			addi t2, t2, -240		#largura maxima de y = largura do mapa - largura da tela + pos inicial
-			la t0, POS_P1_library
-			lh t3, 2(t0)			#pos inicial
-			add t2, t2, t3
-			bge t2,t1, VERIFY_MAP_POS_JUMP5	#pega o menor entre os valores
-			mv t1, t2
-		VERIFY_MAP_POS_JUMP5:
-			#Determinar y inicial
-			la t0, POS_P1_library
-			lh t2, 2(t0)			
-			bge t1, t2, VERIFY_MAP_POS_JUMP6	#se t1(camera) for menor que t2(pos inicial): mv t1, t2
-			mv t1, t2	
-		VERIFY_MAP_POS_JUMP6:
-			mv	s4, t1			# move o resultado pra s4
-
+			#calcular a camera do jogador como visao do mapa levando em conta a posicao central do jogador, serve de base para movimentacao do parallax
+			call VERIFY_MAP_POS		
 						
-											
 																																				
 																		
-MAP_BACKGROUND:	
-			#call SELECT_BACKGROUND
-			la a0, P1_library_size				
-			la a1, POS_P1_library				
-			la a2, Backgorund_library_size					
-			la a3, POS_Backgorund_library				
-			la a4, FILE_MAP_SIZE
+MAP_BACKGROUND:		
+			call SELECT_BACKGROUND
 			call PREPARE_BACKGROUND
 
 			#print background:
@@ -203,7 +148,7 @@ MAP_BACKGROUND:
 			#a7 construido anteriormente
 			call	PRINT	
 			
-OFF_BACKGROUND:																								
+OFF_BACKGROUND:		#procedimento PREPARE_BACKGROUND pula aqui caso nao haja background																							
 
 			
 MAP_PRINT:		
@@ -262,8 +207,6 @@ ENEMY_PRINT_LOOP:	beq s10, zero, OUT_ENEMY_LOOP
 			#a6 determinado em proc
 			#a7 determinado em proc
 			call PRINT
-			
-			
 			j ENEMY_PRINT_LOOP
 OUT_ENEMY_LOOP:																											
 #Restaura s10
@@ -290,21 +233,29 @@ li s1, 0
 j FRAME_0
 FRAME_1:								
 li s1, 1
-FRAME_0:																											
-																																																																																	
+FRAME_0:																																																																																																											
 csrr		s11, 3073	#tempo do primeiro frame
+
+#Verifica se vai ter transicao de fase
+la t0, NEW_SECTOR
+lb t1, 0(t0)
+beqz t1, MAIN_LOOP
+li a7,10
+ecall
+
 j MAIN_LOOP
 
 
-
+MAIN_LOOP1:
 
 
 li a7,10
 ecall
 
 #Procedimentos
+.include "Enemies.s"
+.include "Stance.s"
 .include "Proc.s"	
 .include "Keyboard.s"
-.include "Stance.s"
 .include "Pure_science.s"
-.include "Enemies.s"
+

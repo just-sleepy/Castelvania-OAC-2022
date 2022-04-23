@@ -1,9 +1,15 @@
 .data
 PLAYER_LOOK:    .byte 0 	#(0: olhando para direita, 1: olhando para esquerda)
+
+ATTACKING:	.byte 0 #(0 = not attacking, 1 = attacking)
+
 PLAYER_STANCE:	.half 0
+
 MOVING:		.byte 0
-RUNNING:	.byte 1		#(0: andando, 1: correndo)
-V: 		.string " aaaaaaaa "
+
+RUNNING:	.byte 0	#(0: andando, 1: correndo)
+
+
 .text
 
 
@@ -18,12 +24,19 @@ STANCE:
 	li a6, 0
 	li a7, 0
 	
+	
+	#Attack
+	la t0, ATTACKING
+	lb t2, 0(t0)
+	bne t2, zero, ATTACK_A	#se jump = 1 ou stance < 0
 		
-				
+
 	#Jump
 	la t0, JUMP
 	lb t2, 0(t0)
 	bne t2, zero, JUMP_A	#se jump = 1 ou stance < 0
+	
+	
 	
 	#Running
 	la t0, RUNNING
@@ -34,6 +47,8 @@ STANCE:
 	bne t2, zero, RUN
 					
 	RUN_JJ:
+	
+	
 	
 	#Walk
 	la t0, MOVING
@@ -266,7 +281,7 @@ ret
 
 	
 RUN:	
-li t0, 52		#Se a stance for menor ou igual a 16, inicia a stance de correr em 17
+li t0, 52		#Se a stance for menor ou igual a 52, inicia a stance de correr em 53
 bge t1, t0, RUNNING_INIT
 li t1, 53
 sh t1, 0(t3)		
@@ -412,7 +427,7 @@ li t5, BOOST_LIMIT
 bge t2, t5, JUMP_MID	#Boost acabou chegando em 12
 bge zero, t2, JUMP_MID	#Boost igual a -1
 
-#Se a stance for menor ou igual a 52, inicia a stance de pula em 53
+#Se a stance for menor ou igual a 0, inicia a stance de pula em -1
 blt t1, zero, JUMP_INIT
 li t1, -1
 sh t1, 0(t3)	
@@ -529,4 +544,140 @@ ret
 		sh t1, 0(t3)
 		ret					
 
+ATTACK_A:
+li t0, 80		#Se a stance for maior ou igual a 80, inicia a stance de correr em 81
+bge t1, t0, ATTACK_INIT
+li t1, 81
+sh t1, 0(t3)	
+		
+
+ATTACK_INIT:																																																																		
+li t0, 84
+bge t0, t1, Atk0
+li t0, 87
+bge t0, t1, Atk1
+li t0, 90
+bge t0, t1, Atk2
+li t0, 93
+bge t0, t1, Atk3
+li t0, 96
+bge t0, t1, Atk4
+li t0, 99
+bge t0, t1, Atk5
+li t0, 102
+bge t0, t1, Atk6
+li t0, 105
+bge t0, t1, Atk7
+
+ret		
+
+	Atk0:
+	addi a6, a6, 0
+	li a7, 793
+	#lb t0, 0(t4)
+	#beq t0, zero,Jump5_J
+	#addi a6, a6, 532
+	#addi a7, a7, -2
+		#Jump5_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		ret
+		
+	Atk1:
+	addi a6, a6, 31
+	li a7, 793
+	#lb t0, 0(t4)
+	#beq t0, zero,Jump5_J
+	#addi a6, a6, 532
+	#addi a7, a7, -2
+		#Jump5_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		ret	
+		
+	Atk2:
+	addi a6, a6, 61
+	li a7, 793
+	#lb t0, 0(t4)
+	#beq t0, zero,Jump5_J
+	#addi a6, a6, 532
+	#addi a7, a7, -2
+	#addi t1, t1, 1
+		#sh t1, 0(t3)
+		#Jump5_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		ret
+		
+	Atk3:
+	addi a6, a6, 87
+	li a7, 793
+	#lb t0, 0(t4)
+	#beq t0, zero,Jump5_J
+	#addi a6, a6, 532
+	#addi a7, a7, -2
+		#Jump5_J:
+		
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		ret				
 	
+	Atk4:
+	addi a6, a6, 129
+	li a7, 793
+	#lb t0, 0(t4)
+	#beq t0, zero,Jump5_J
+	#addi a6, a6, 532
+	#addi a7, a7, -2
+	#addi t1, t1, 1
+		#sh t1, 0(t3)
+		#Jump5_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		
+		ret
+		
+	Atk5:
+	addi a6, a6, 164
+	li a7, 793
+	#lb t0, 0(t4)
+	#beq t0, zero,Jump5_J
+	#addi a6, a6, 532
+	#addi a7, a7, -2
+	#addi t1, t1, 1
+		#sh t1, 0(t3)
+		#Jump5_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		
+		ret
+		
+	Atk6:
+	addi a6, a6, 201
+	li a7, 793
+	#lb t0, 0(t4)
+	#beq t0, zero,Jump5_J
+	#addi a6, a6, 532
+	#addi a7, a7, -2
+	#addi t1, t1, 1
+		#sh t1, 0(t3)
+		#Jump5_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		
+		ret	
+		
+	Atk7:
+	addi a6, a6, 238
+	li a7, 793
+	#lb t0, 0(t4)
+	#beq t0, zero,Jump5_J
+	#addi a6, a6, 532
+	#addi a7, a7, -2
+	#addi t1, t1, 1
+		#sh t1, 0(t3)
+		#Jump5_J:
+		la t0, ATTACKING
+		sb zero, 0(t0)
+		sh zero, 0(t3)
+		ret						
