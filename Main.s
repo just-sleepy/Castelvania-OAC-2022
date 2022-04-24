@@ -3,10 +3,10 @@
 
 
 .data 
-PLAYER_POS:	.word 2280, 600	# posicao atual do player/inicial
-#PLAYER_POS:	.word 380, 900	# posicao atual do player/inicial
+#PLAYER_POS:	.word 2280, 600	# posicao atual do player/inicial
+PLAYER_POS:	.word 380, 900	# posicao atual do player/inicial
+#PLAYER_POS:	.word 1361, 388	# posicao atual do player/inicial
 PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
-
 
 
 
@@ -65,13 +65,13 @@ MAIN:
 			
 			
 			
-			#li a1, 600
-			#li a2, 450
-			#call ADD_GHOST
+			li a1, 600
+			li a2, 450
+			call ADD_GHOST
 
-			#li a1, 450
-			#li a2, 600
-			#call ADD_GHOST
+			li a1, 450
+			li a2, 600
+			call ADD_GHOST
 			
 			
 			
@@ -129,6 +129,7 @@ MAIN_LOOP:		# O framerate de 60 fps
 			call SCIENCE_COLLISION
 
 			#calcular a camera do jogador como visao do mapa levando em conta a posicao central do jogador, serve de base para movimentacao do parallax
+			call SELECT_SECTOR #select sector para colisao
 			call VERIFY_MAP_POS		
 						
 																																				
@@ -222,7 +223,6 @@ addi 	sp, sp, 4
 sw 	t0, 0(t1)
 j OUT_ENEMY_LOOP
 	
-	
 						
 											
 																					
@@ -240,8 +240,23 @@ csrr		s11, 3073	#tempo do primeiro frame
 la t0, NEW_SECTOR
 lb t1, 0(t0)
 beqz t1, MAIN_LOOP
-li a7,10
-ecall
+#j MAIN_LOOP1
+#Novos valores de setor e posicao player
+la t2, SETOR
+lb t1, 0(t0) 
+sb t1, 0(t2)
+sb zero, 0(t0)
+
+la t0, PLAYER_POS
+la t2, NEW_PLAYER_POS
+
+lw t1, 0(t2)	 #novo x
+sw t1, 0(t0)
+
+lw t1, 4(t2)	 #novo y
+sw t1, 4(t0)
+
+
 
 j MAIN_LOOP
 

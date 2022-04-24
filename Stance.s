@@ -568,17 +568,18 @@ li t0, 102
 bge t0, t1, Atk6
 li t0, 105
 bge t0, t1, Atk7
-
+li t0, 112
+bge t0, t1, Atk8
 ret		
 
 	Atk0:
 	addi a6, a6, 0
 	li a7, 793
-	#lb t0, 0(t4)
-	#beq t0, zero,Jump5_J
-	#addi a6, a6, 532
-	#addi a7, a7, -2
-		#Jump5_J:
+	lb t0, 0(t4)
+	beq t0, zero,Atk0_J
+	addi a6, a6, 916
+	addi a7, a7, 0
+		Atk0_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
@@ -586,11 +587,11 @@ ret
 	Atk1:
 	addi a6, a6, 31
 	li a7, 793
-	#lb t0, 0(t4)
-	#beq t0, zero,Jump5_J
-	#addi a6, a6, 532
-	#addi a7, a7, -2
-		#Jump5_J:
+	lb t0, 0(t4)
+	beq t0, zero,Atk1_J
+	addi a6, a6, 853
+	addi a7, a7, 0
+		Atk1_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret	
@@ -598,13 +599,11 @@ ret
 	Atk2:
 	addi a6, a6, 61
 	li a7, 793
-	#lb t0, 0(t4)
-	#beq t0, zero,Jump5_J
-	#addi a6, a6, 532
-	#addi a7, a7, -2
-	#addi t1, t1, 1
-		#sh t1, 0(t3)
-		#Jump5_J:
+	lb t0, 0(t4)
+	beq t0, zero,Atk2_J
+	addi a6, a6, 795
+	addi a7, a7, 0
+		Atk2_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret
@@ -612,12 +611,11 @@ ret
 	Atk3:
 	addi a6, a6, 87
 	li a7, 793
-	#lb t0, 0(t4)
-	#beq t0, zero,Jump5_J
-	#addi a6, a6, 532
-	#addi a7, a7, -2
-		#Jump5_J:
-		
+	lb t0, 0(t4)
+	beq t0, zero,Atk3_J
+	addi a6, a6, 713
+	addi a7, a7, 0
+		Atk3_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		ret				
@@ -625,13 +623,11 @@ ret
 	Atk4:
 	addi a6, a6, 129
 	li a7, 793
-	#lb t0, 0(t4)
-	#beq t0, zero,Jump5_J
-	#addi a6, a6, 532
-	#addi a7, a7, -2
-	#addi t1, t1, 1
-		#sh t1, 0(t3)
-		#Jump5_J:
+	lb t0, 0(t4)
+	beq t0, zero,Atk4_J
+	addi a6, a6, 660
+	addi a7, a7, 0
+		Atk4_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		
@@ -640,13 +636,11 @@ ret
 	Atk5:
 	addi a6, a6, 164
 	li a7, 793
-	#lb t0, 0(t4)
-	#beq t0, zero,Jump5_J
-	#addi a6, a6, 532
-	#addi a7, a7, -2
-	#addi t1, t1, 1
-		#sh t1, 0(t3)
-		#Jump5_J:
+	lb t0, 0(t4)
+	beq t0, zero,Atk5_J
+	addi a6, a6, 589
+	addi a7, a7, 0
+		Atk5_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
 		
@@ -655,29 +649,39 @@ ret
 	Atk6:
 	addi a6, a6, 201
 	li a7, 793
-	#lb t0, 0(t4)
-	#beq t0, zero,Jump5_J
-	#addi a6, a6, 532
-	#addi a7, a7, -2
-	#addi t1, t1, 1
-		#sh t1, 0(t3)
-		#Jump5_J:
+	lb t0, 0(t4)
+	beq t0, zero,Atk6_J
+	addi a6, a6, 512
+	addi a7, a7, 0
+		Atk6_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
-		
 		ret	
 		
 	Atk7:
 	addi a6, a6, 238
 	li a7, 793
-	#lb t0, 0(t4)
-	#beq t0, zero,Jump5_J
-	#addi a6, a6, 532
-	#addi a7, a7, -2
-	#addi t1, t1, 1
-		#sh t1, 0(t3)
-		#Jump5_J:
+	lb t0, 0(t4)
+	beq t0, zero,Atk7_J
+	addi a6, a6, 442
+	addi a7, a7, 0
+		Atk7_J:
+		addi t1, t1, 1
+		sh t1, 0(t3)
+		#la t0, ATTACKING
+		#sb zero, 0(t0)
+		#sh zero, 0(t3)
+		ret						
+	
+	Atk8:
+	addi a6, a6, 0
+	li a7, 793
+	lb t0, 0(t4)
+	beq t0, zero,Atk8_J
+	addi a6, a6, 916
+	addi a7, a7, 0
+		Atk8_J:
 		la t0, ATTACKING
 		sb zero, 0(t0)
 		sh zero, 0(t3)
-		ret						
+		ret

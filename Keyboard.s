@@ -1,4 +1,8 @@
 
+.data
+
+
+
 .text
 KEY:		
 

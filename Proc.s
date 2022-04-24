@@ -103,7 +103,10 @@ ret
 
 
 ################### VERIFY_MAP_POS ###############################
-#	Resultado:						#
+#	Argumentos:						#
+#	a0 =  posicao setor					#
+#	a2 = tamanho setor					#
+#  	Resultado:						#
 #	s3 = posicao do mapax					#
 #	s4 = posicao do mapay					#
 #								#
@@ -117,18 +120,15 @@ VERIFY_MAP_POS:
 			bge t1, zero,VERIFY_MAP_POS_JUMP #t1 > 0
 			mv t1, zero			#senao t1 = 0
 		VERIFY_MAP_POS_JUMP:
-			la t0, P1_library_size
-			lh t2, 0(t0)
+			lh t2, 0(a2)
 			addi t2, t2, -320		#largura maxima de x = largura do mapa - largura da tela + pos inicial
-			la t0, POS_P1_library
-			lh t3, 0(t0)			#pos inicial
+			lh t3, 0(a0)			#pos inicial
 			add t2, t2, t3
 			bge t2,t1, VERIFY_MAP_POS_JUMP2		#pega o menor entre os valores
 			mv t1, t2
 		VERIFY_MAP_POS_JUMP2:
 			#Determinar x inicial
-			la t0, POS_P1_library
-			lh t2, 0(t0)			
+			lh t2, 0(a0)			
 			bge t1, t2, VERIFY_MAP_POS_JUMP3	#se t1(camera) for menor que t2(pos inicial): mv t1, t2
 			mv t1, t2	
 		VERIFY_MAP_POS_JUMP3:
@@ -142,18 +142,15 @@ VERIFY_MAP_POS:
 			bge t1, zero, VERIFY_MAP_POS_JUMP4 #t1 > 0
 			mv t1, zero			#senao t1 = 0
 		VERIFY_MAP_POS_JUMP4:
-			la t0, P1_library_size
-			lh t2, 2(t0)
+			lh t2, 2(a2)
 			addi t2, t2, -240		#largura maxima de y = largura do mapa - largura da tela + pos inicial
-			la t0, POS_P1_library
-			lh t3, 2(t0)			#pos inicial
+			lh t3, 2(a0)			#pos inicial
 			add t2, t2, t3
 			bge t2,t1, VERIFY_MAP_POS_JUMP5	#pega o menor entre os valores
 			mv t1, t2
 		VERIFY_MAP_POS_JUMP5:
 			#Determinar y inicial
-			la t0, POS_P1_library
-			lh t2, 2(t0)			
+			lh t2, 2(a0)			
 			bge t1, t2, VERIFY_MAP_POS_JUMP6	#se t1(camera) for menor que t2(pos inicial): mv t1, t2
 			mv t1, t2	
 		VERIFY_MAP_POS_JUMP6:

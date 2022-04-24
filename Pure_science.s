@@ -167,7 +167,8 @@ SCIENCE_COLLISION_Y_DOWN:
 			add		t2, t2, t1		# t4 += t1 + pos hitbox
 			#------------------------1/1 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_Y_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_Y_EFFECT
 			
 				#Sem colisao significa que esta flutuando e a gravidade começa a fazer efeito
 				la t0, ON_AIR
@@ -239,7 +240,8 @@ SCIENCE_COLLISION_Y_UP:
 			add		t2, t2, t1		# t4 += t1 + pos hitbox
 			#------------------------1/1 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_Y_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_Y_EFFECT
 			j SCIENCE_COLLISION_X
 														
 																		
@@ -292,7 +294,8 @@ SCIENCE_COLLISION_X_R:
 			#'	XX Y		
 			#------------------------0/4 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_X_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_X_EFFECT
 			
 					
 			li		t1, PLAYER_HEIGHT	
@@ -306,7 +309,8 @@ SCIENCE_COLLISION_X_R:
 			add		t2, t2, t1		# t4 += t1 + pos hitbox
 			#------------------------1/4 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_X_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_X_EFFECT
 			
 			li		t1, PLAYER_HEIGHT	
 			li 		t0, 4
@@ -319,7 +323,8 @@ SCIENCE_COLLISION_X_R:
 			add		t2, t2, t1		# t4 += t1 + pos hitbox
 			#------------------------2/4 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_X_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_X_EFFECT
 			
 			li		t1, PLAYER_HEIGHT	
 			li 		t0, 4
@@ -332,7 +337,8 @@ SCIENCE_COLLISION_X_R:
 			add		t2, t2, t1		# t4 += t1 + pos hitbox
 			#------------------------3/4 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_X_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_X_EFFECT
 			
 			li		t1, PLAYER_HEIGHT	
 			li 		t0, 4
@@ -345,7 +351,8 @@ SCIENCE_COLLISION_X_R:
 			add		t2, t2, t1		# t4 += t1 + pos hitbox
 			#------------------------4/4 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_X_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_X_EFFECT
 			
 			ret
 			#j		PHYSICS.COLL.Y
@@ -400,7 +407,8 @@ SCIENCE_COLLISION_X_L:	fadd.s		ft0, ft0, ft7		# ft0 = y
 			#'	XX Y		
 			#------------------------0/4 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_X_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_X_EFFECT
 			
 					
 			li		t1, PLAYER_HEIGHT	
@@ -414,7 +422,8 @@ SCIENCE_COLLISION_X_L:	fadd.s		ft0, ft0, ft7		# ft0 = y
 			add		t2, t2, t1		# t4 += t1 + pos hitbox
 			#------------------------1/4 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_X_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_X_EFFECT
 			
 			li		t1, PLAYER_HEIGHT	
 			li 		t0, 4
@@ -427,7 +436,8 @@ SCIENCE_COLLISION_X_L:	fadd.s		ft0, ft0, ft7		# ft0 = y
 			add		t2, t2, t1		# t4 += t1 + pos hitbox
 			#------------------------2/4 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_X_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_X_EFFECT
 			
 			li		t1, PLAYER_HEIGHT	
 			li 		t0, 4
@@ -440,7 +450,8 @@ SCIENCE_COLLISION_X_L:	fadd.s		ft0, ft0, ft7		# ft0 = y
 			add		t2, t2, t1		# t4 += t1 + pos hitbox
 			#------------------------3/4 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_X_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_X_EFFECT
 			
 			li		t1, PLAYER_HEIGHT	
 			li 		t0, 4
@@ -453,7 +464,8 @@ SCIENCE_COLLISION_X_L:	fadd.s		ft0, ft0, ft7		# ft0 = y
 			add		t2, t2, t1		# t4 += t1 + pos hitbox
 			#------------------------4/4 do personagem----------------------------------------------------------------------
 			lbu		t1, 0(t2)
-			beqz		t1, COLLISION_X_EFFECT
+			li 		t0, 255
+			bne 		t1, t0,COLLISION_X_EFFECT
 			
 
 			ret
@@ -463,7 +475,7 @@ SCIENCE_COLLISION_X_L:	fadd.s		ft0, ft0, ft7		# ft0 = y
 
 COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			beq		t1, t3, HIT_FLOOR
-			li		t3, 148
+			li		t3, 105
 			beq		t1, t3, TRANSITION_P1B_P3B		
 			ret	
 
@@ -521,7 +533,7 @@ COLLISION_X_EFFECT:
 			li	 	a1, 0
 			li		t3, 0			# wall = 0
 			beq		t1, t3, HIT_WALL
-			li		t3, 148
+			li		t3, 105
 			beq		t1, t3, TRANSITION_P1B_P3B
 			ret	
 			
@@ -572,17 +584,18 @@ COLLISION_X_EFFECT:
 		li t1, 3
 		sb t1, 0(t0)
 		la t0, NEW_PLAYER_POS	#POSICAO_INICIAL=2194 x 648
-		li t1, 2194
+		li t1, 2200
 		sw t1, 0(t0)	#x
 		li t1, 648
 		sw t1, 4(t0)	#y
+		ret
 		
 		P3B_TO_P1B:
 		la t0, NEW_SECTOR
 		li t1, 1
 		sb t1, 0(t0)
 		la t0, NEW_PLAYER_POS	#POSICAO_INICIAL=1355 x 392
-		li t1, 1355
+		li t1, 1340
 		sw t1, 0(t0)	#x
 		li t1, 392
 		sw t1, 4(t0)	#y
