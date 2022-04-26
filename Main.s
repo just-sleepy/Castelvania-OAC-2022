@@ -209,9 +209,13 @@ ENEMY_PRINT_LOOP:	beq s10, zero, OUT_ENEMY_LOOP
 			#a7 determinado em proc
 			call PRINT
 			j ENEMY_PRINT_LOOP
+			
+	
+						
+			
 OUT_ENEMY_LOOP:																											
 #Restaura s10
-beq t6, sp, FIM_MAIN_LOOP
+beq t6, sp, WEAPON
 la t1, QUEUE_ENEMIES
 
 OUT_ENEMY_LOOP_J:
@@ -223,8 +227,28 @@ addi 	sp, sp, 4
 sw 	t0, 0(t1)
 j OUT_ENEMY_LOOP
 	
+	
+	
+	
+	
 						
-											
+WEAPON:	la	 t0, ATTACKING
+	lb 	t1, 0(t0)
+	beqz 	t1, FIM_MAIN_LOOP#(nao esta atacando)
+		
+	li	a7, 1024
+	la	a0, Pocket
+	li	a1, 0											
+	ecall
+	
+	call WEAPON_POS
+	
+	la a3, Pocket_size
+	#a4 determinado em WEAPON_POS
+	mv	a5, s1
+	# x = player x - map x
+			
+	call PRINT																																																																		
 																					
 FIM_MAIN_LOOP:		
 call SWITCH_FRAME		#mostra a nova tela	
@@ -273,4 +297,4 @@ ecall
 .include "Proc.s"	
 .include "Keyboard.s"
 .include "Pure_science.s"
-
+.include "Weapon.s"

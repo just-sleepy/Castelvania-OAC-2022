@@ -552,23 +552,23 @@ sh t1, 0(t3)
 		
 
 ATTACK_INIT:																																																																		
-li t0, 84
+li t0, 85
 bge t0, t1, Atk0
-li t0, 87
+li t0, 89
 bge t0, t1, Atk1
-li t0, 90
-bge t0, t1, Atk2
 li t0, 93
+bge t0, t1, Atk2
+li t0, 97
 bge t0, t1, Atk3
-li t0, 96
+li t0, 104
 bge t0, t1, Atk4
-li t0, 99
+li t0, 111
 bge t0, t1, Atk5
-li t0, 102
+li t0, 118
 bge t0, t1, Atk6
-li t0, 105
+li t0, 124
 bge t0, t1, Atk7
-li t0, 112
+li t0, 128
 bge t0, t1, Atk8
 ret		
 
@@ -589,7 +589,7 @@ ret
 	li a7, 793
 	lb t0, 0(t4)
 	beq t0, zero,Atk1_J
-	addi a6, a6, 853
+	addi a6, a6, 855
 	addi a7, a7, 0
 		Atk1_J:
 		addi t1, t1, 1
@@ -601,7 +601,7 @@ ret
 	li a7, 793
 	lb t0, 0(t4)
 	beq t0, zero,Atk2_J
-	addi a6, a6, 795
+	addi a6, a6, 794
 	addi a7, a7, 0
 		Atk2_J:
 		addi t1, t1, 1
@@ -613,7 +613,7 @@ ret
 	li a7, 793
 	lb t0, 0(t4)
 	beq t0, zero,Atk3_J
-	addi a6, a6, 713
+	addi a6, a6, 703
 	addi a7, a7, 0
 		Atk3_J:
 		addi t1, t1, 1
@@ -646,18 +646,19 @@ ret
 		
 		ret
 		
+		
 	Atk6:
 	addi a6, a6, 201
 	li a7, 793
 	lb t0, 0(t4)
 	beq t0, zero,Atk6_J
-	addi a6, a6, 512
+	addi a6, a6, 515
 	addi a7, a7, 0
 		Atk6_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
-		ret	
-		
+		ret						
+	
 	Atk7:
 	addi a6, a6, 238
 	li a7, 793
@@ -668,20 +669,19 @@ ret
 		Atk7_J:
 		addi t1, t1, 1
 		sh t1, 0(t3)
-		#la t0, ATTACKING
-		#sb zero, 0(t0)
-		#sh zero, 0(t3)
-		ret						
+		ret
 	
 	Atk8:
-	addi a6, a6, 0
+	addi a6, a6, 238
 	li a7, 793
 	lb t0, 0(t4)
 	beq t0, zero,Atk8_J
-	addi a6, a6, 916
+	addi a6, a6, 442
 	addi a7, a7, 0
 		Atk8_J:
 		la t0, ATTACKING
+		sb zero, 0(t0)
+		la t0, WHIP
 		sb zero, 0(t0)
 		sh zero, 0(t3)
 		ret

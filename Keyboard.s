@@ -121,6 +121,10 @@ STILL_MOVING:#COntinua se movendo se houver o pulo
 li a0, 0
 li a1, 0
 
+la t0, ATTACKING
+lb t1, 0(t0)
+bnez t1, KEY_ATK	#(esta atacando) paralisa a movimentacao	
+
 		la t0, JUMP
 		lb t1, 0(t0)
 		beq t1, zero, KEY_W	#Se jump diferente de 0, se nao tiver tecla pressionada, boost nao poderá ser usado até queda
@@ -163,15 +167,15 @@ KEY_D:		beq t5, zero, KEY_F 	#se tecla nao esta pressionada vai para proximo
 		
 		la t0, PLAYER_LOOK      #Olhando para a direita
 		sb zero, 0(t0)
-
-
+		
+KEY_ATK:
 KEY_F:		beq s6, zero, KEY_R	#se tecla nao esta pressionada vai para proximo
 		la t0, ATTACKING
 		li t1, 1		#Armazena 1 em attacking simbolizando que esta atacando
 		sb t1, 0(t0)
-		 #la t0, PLAYER_STANCE
-		#li t1, 81		
-		#sb t1, 0(t0)
+		la t0, WHIP
+		li t1, 1		#Armazena 1 em chaing simbolizando que esta atacando
+		sb t1, 0(t0)
 	
 		
 KEY_R:		beq s5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proximo
