@@ -345,4 +345,72 @@ PREPARE_BACKGROUND:
 			ret
 
 
+################### Sector_enemies #############################
+#								#
+#		s6 = return adress jal				#
+#								#
+#################################################################
+Sector_enemies:
+li s10, 0	#reseta quantidade de enemies
 
+la t0, SETOR
+lb t1, 0(t0)
+
+li t2, 1
+beq t1, t2, P1_ENEMIES
+
+li t2, 2
+beq t1, t2, P2_ENEMIES
+
+li t2, 3
+#beq t1, t2, P3_ENEMIES
+
+li t2, 4
+#beq t1, t2, P4_ENEMIES
+
+li t2, 5
+#beq t1, t2, P5_ENEMIES
+
+li t2, 6
+#beq t1, t2, P6_ENEMIES
+
+li t2, 7
+#beq t1, t2, P7_ENEMIES
+
+li t2, 8
+#beq t1, t2, P8_ENEMIES
+ret
+
+
+			P1_ENEMIES:
+			li a1, 690
+			li a2, 450
+			call ADD_GHOST
+
+			li a1, 650
+			li a2, 900
+			call ADD_GHOST
+			
+			li a1, 600
+			li a2, 950
+			call ADD_GHOST
+			
+			li a1, 600
+			li a2, 450
+			call ADD_GHOST
+			
+			li a1, 450
+			li a2, 850
+			call ADD_GHOST
+			jr s6
+			
+			
+			P2_ENEMIES:
+			li a1, 2800
+			li a2, 1519
+			call ADD_GHOST
+
+			li a1, 2650
+			li a2, 1519
+			call ADD_GHOST
+			jr s6

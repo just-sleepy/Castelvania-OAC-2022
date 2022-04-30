@@ -77,7 +77,7 @@ Pocket_size:			.half 3344, 620
 
 
 #Library
-Map_library:			.string 		"./Imagens/Map_library.bin"
+Map_library:			.string 		"./Imagens/MAPA.bin"
 FILE_MAP_SIZE:			.half 4356, 2860	#sempre fazer x += 1(não sei o porque)
 
 #--------------------setores------------------------------------------------

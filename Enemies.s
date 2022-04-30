@@ -1,13 +1,13 @@
 .data
 Q:		.space 3	
-QUEUE_ENEMIES:	.space 640
+QUEUE_ENEMIES:	.space 644		#Espaço para 40 enemies -> 16(espaço ocupado por cada um) x 40 = 640
 
 GHOST_SIZE:	.half 23, 23
 
 ZOMBIE_SIZE:	.half 23, 23
 
 Death_enemy_size:	.half 32, 32
-	
+Heart_size:		.half 17, 17		
 Ritcher_damaged: 	.byte 0	#(se estiver ferido = 1, caso contrario, 0.)
 .text
 
@@ -318,7 +318,7 @@ Ghost3:
 	la 	a4, GHOST_SIZE
 	addi 	a6, a6, 65
 	li 	a7, 0
-	addi 	t5, t5, 1		#move stance
+	addi 	t5, t5, 1		#move stance	
 		j  Ghost_behaviour
 
 		
@@ -431,6 +431,8 @@ li t0, -65
 bge t5, t0, Death12
 li t0, -70
 bge t5, t0, Death13
+li t0, -73
+bge t5, t0, HEART
 ret
 
 Death0:
@@ -531,7 +533,7 @@ Death13:
 	li 	a6, 455
 	li 	a7, 489
 	addi 	t5, t5, -1		#move stance
-	ret
+	
 	
 		#Ultima morte entao verifica a chance de dropar um coracao
 		GERAR_ALEATORIO:
@@ -555,9 +557,18 @@ Death13:
 		li t0, 1
 		beq t3, t0, DROPA_CORACAO
 		ret																											
+
 	
+HEART:		
+	la 	a4, Heart_size
+	li 	a6, 569
+	li 	a7, 499
+				
+				
+					
+							
 DROPA_CORACAO:
-li t5, -1	#Stance de coração				
+li t5, -71	#Stance de coração				
 							
 													
 ENEMY_NEXT:																																																																																																																											

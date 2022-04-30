@@ -5,7 +5,7 @@
 .data 
 
 PLAYER_POS:	.word 450, 900	# posicao atual do player/inicial
-#PLAYER_POS:	.word 3100 , 713	# posicao atual do player/inicial
+#PLAYER_POS:	.word 2875 , 1476	# posicao atual do player/inicial
 PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 
 
@@ -63,28 +63,9 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 			
 			call SWITCH_FRAME
 			
+			jal s6, Sector_enemies
 			
 			
-			li a1, 690
-			li a2, 450
-			call ADD_GHOST
-
-			li a1, 650
-			li a2, 900
-			call ADD_GHOST
-			
-			li a1, 600
-			li a2, 950
-			call ADD_GHOST
-			
-			li a1, 600
-			li a2, 450
-			call ADD_GHOST
-			
-			li a1, 450
-			li a2, 850
-			call ADD_GHOST
-
 			
 			
 MAIN_LOOP:		# O framerate de 60 fps
