@@ -71,6 +71,11 @@ BACKGROUND:			.byte 0	#(1 para que tem background e 0 que nao tem)
 Ritcher:			.string 		"./Imagens/Ritcher.bin"
 Ritcher_size:			.half 952, 896	#sempre fazer x += 1(não sei o porque)
 
+#Weapon
+Pocket:				.string 		"./Imagens/Pocket.bin"
+Pocket_size:			.half 3344, 620
+
+
 #Library
 Map_library:			.string 		"./Imagens/Map_library.bin"
 FILE_MAP_SIZE:			.half 4356, 2860	#sempre fazer x += 1(não sei o porque)
