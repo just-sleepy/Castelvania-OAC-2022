@@ -24,6 +24,10 @@ STANCE:
 	li a6, 0
 	li a7, 0
 	
+	#Damaged
+	la t0, 	Ritcher_damaged
+	lb t2, 0(t0)	#Ativa o ritcher_damaged para a stance	
+	bne t2, zero, DAMAGED	#se jump = 1 ou stance < 0
 	
 	#Attack
 	la t0, ATTACKING
@@ -554,9 +558,9 @@ sh t1, 0(t3)
 ATTACK_INIT:																																																																		
 li t0, 85
 bge t0, t1, Atk0
-li t0, 89
+li t0, 88
 bge t0, t1, Atk1
-li t0, 93
+li t0, 92
 bge t0, t1, Atk2
 li t0, 97
 bge t0, t1, Atk3
@@ -684,4 +688,14 @@ ret
 		la t0, WHIP
 		sb zero, 0(t0)
 		sh zero, 0(t3)
+		ret
+
+DAMAGED:
+	addi a6, a6, 0
+	li a7, 536
+	lb t0, 0(t4)
+	beq t0, zero,DAMAGED_J
+	addi a6, a6, 920
+	addi a7, a7, 0
+		DAMAGED_J:
 		ret

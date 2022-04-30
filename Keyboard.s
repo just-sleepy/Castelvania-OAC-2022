@@ -33,7 +33,7 @@ KEY:
 KEY_END:
 		csrr		t0, 3073		# t0 = tempo atual
 		sub		t0, t0, t5		# t0 = tempo atual - ultimo frame
-		li		t1, 16			#16ms 
+		li		t1, 8			#16ms 
 		bltu		t0, t1, K
 					
 									
@@ -96,7 +96,7 @@ LOOP_BUFFER:
 #a1 = y	
 SELECT_KEYS:
 bne t3, zero,  STILL_MOVING
-bne t5, zero, STILL_MOVING
+bne t5, zero,  STILL_MOVING
 la t0, MOVING		#Determina q o personagem nao se move
 sb zero, 0(t0)
 
@@ -117,7 +117,10 @@ li t1, 0
 sh t1, 0(t0)
 
 STILL_MOVING:#COntinua se movendo se houver o pulo		
-						
+
+la t0, Ritcher_damaged
+lb a0, 0(t0)
+bne a0, zero, FINISH_KEY	#Se damaged, fica imovel				
 li a0, 0
 li a1, 0
 

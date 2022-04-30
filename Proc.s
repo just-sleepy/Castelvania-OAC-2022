@@ -177,14 +177,37 @@ lb t1, 0(t0)
 li t2, 1
 beq t1, t2, P1
 
+li t2, 2
+beq t1, t2, P2
+
 li t2, 3
 beq t1, t2, P3
+
+li t2, 4
+beq t1, t2, P4
+
+li t2, 5
+beq t1, t2, P5
+
+li t2, 6
+beq t1, t2, P6
+
+li t2, 7
+beq t1, t2, P7
+
+li t2, 8
+beq t1, t2, P8
 
 P1:
 la a0, POS_P1_library
 la a1, P1_Map_library
 la a2, P1_library_size
 ret
+
+P2:
+la a0, POS_P2_library
+la a1, P2_Map_library
+la a2, P2_library_size
 
 P3:
 
@@ -193,6 +216,35 @@ la a1, P3_Map_library
 la a2, P3_library_size
 ret
 
+P4:
+la a0, POS_P4_library
+la a1, P4_Map_library
+la a2, P4_library_size
+ret
+
+P5:
+la a0, POS_P5_library
+la a1, P5_Map_library
+la a2, P5_library_size
+ret
+
+P6:
+la a0, POS_P6_library
+la a1, P6_Map_library
+la a2, P6_library_size
+ret
+
+P7:
+la a0, POS_P7_library
+la a1, P7_Map_library
+la a2, P7_library_size
+ret
+
+P8:
+la a0, POS_P8_library
+la a1, P8_Map_library
+la a2, P8_library_size
+ret
 ################### Select background ###########################
 #	Resultado:						#
 #	la a0 = setor size					#

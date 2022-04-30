@@ -3,16 +3,12 @@
 
 
 .data 
-#PLAYER_POS:	.word 2280, 600	# posicao atual do player/inicial
-PLAYER_POS:	.word 380, 900	# posicao atual do player/inicial
-#PLAYER_POS:	.word 1361, 388	# posicao atual do player/inicial
+
+PLAYER_POS:	.word 450, 900	# posicao atual do player/inicial
+#PLAYER_POS:	.word 3100 , 713	# posicao atual do player/inicial
 PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 
 
-
-#CHAR_POS:	.float 704, 648
-
-#RESPAWN_POS:	.half 704, 648	# respawn pos (x, y)
 
 
 
@@ -26,17 +22,11 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 # s3 = mapa x
 # s4 = mapa y
 #s9 = enemies queue inicial
-#s10 = enemies queue
+#s10 = enemies generator time
 #s11 = frame control
 
-MAIN:
+
 # Open MAPA file	
-			#create stack
-			#addi	sp,sp,-1480
-			#save s10
-			#sw	s10,1480(sp)
-			#update s10
-			#addi	s10,sp,1480	
 			
 			la		t0, PLAYER_POS
 			flw		fs0, 0(t0)		# fs0 = char x
@@ -65,14 +55,25 @@ MAIN:
 			
 			
 			
-			li a1, 600
+			li a1, 690
 			li a2, 450
 			call ADD_GHOST
 
-			li a1, 450
-			li a2, 600
+			li a1, 650
+			li a2, 900
 			call ADD_GHOST
 			
+			li a1, 600
+			li a2, 950
+			call ADD_GHOST
+			
+			li a1, 600
+			li a2, 450
+			call ADD_GHOST
+			
+			li a1, 450
+			li a2, 850
+			call ADD_GHOST
 			
 			
 MAIN_LOOP:		# O framerate de 60 fps
@@ -82,6 +83,8 @@ MAIN_LOOP:		# O framerate de 60 fps
 			li		t1, 0		# 16ms 
 			bltu		t0, t1, MAIN_LOOP	
 
+
+			
 
 			call 	KEY	#verifica teclado
 			call    GRAVITY	#SE no ar, aumenta a velocidade da gravidade
@@ -251,6 +254,15 @@ WEAPON:	la	 t0, ATTACKING
 	call PRINT																																																																		
 																					
 FIM_MAIN_LOOP:		
+csrr		t0, 3073		# t0 = tempo atual
+sub		t0, t0, s11		# t0 = tempo atual - ultimo frame
+li		t1, 24#16ms 
+bltu		t0, t1, FIM_MAIN_LOOP
+					
+
+
+
+
 call SWITCH_FRAME		#mostra a nova tela	
 beq s1, zero,FRAME_1
 li s1, 0
@@ -259,6 +271,11 @@ FRAME_1:
 li s1, 1
 FRAME_0:																																																																																																											
 csrr		s11, 3073	#tempo do primeiro frame
+
+
+
+
+
 
 #Verifica se vai ter transicao de fase
 la t0, NEW_SECTOR
@@ -285,7 +302,7 @@ sw t1, 4(t0)
 j MAIN_LOOP
 
 
-MAIN_LOOP1:
+
 
 
 li a7,10

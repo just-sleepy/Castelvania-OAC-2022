@@ -1,11 +1,21 @@
 .data
 Q:		.space 3	
-QUEUE_ENEMIES:	.space 200
+QUEUE_ENEMIES:	.space 640
 
 GHOST_SIZE:	.half 23, 23
+
+ZOMBIE_SIZE:	.half 23, 23
+
+Death_enemy_size:	.half 32, 32
 	
+Ritcher_damaged: 	.byte 0	#(se estiver ferido = 1, caso contrario, 0.)
 .text
+
 .eqv GHOST_VELOCITY		1
+.eqv GHOST_HP			1
+
+.eqv ZOMBIE_VELOCITY		1
+.eqv ZOMBIE_HP			1
 
 ###################### ADD_GHOST ###############################
 #	ARGUMENTOS:						#
@@ -20,17 +30,48 @@ add t0, t0, s10		#soma posicao s10 como a ultima posicao da queue, para colocar 
 addi t0, t0, 4		#Proxima posicao
 sw zero, 0(t0)		#Stance primario ghost = 0
 addi t0, t0, 4		#Proxima posicao
+li t1, GHOST_HP
+sw t1, 0(t0)		#Vida ghost = 1
+addi t0, t0, 4		#Proxima posicao
 sw a1, 0(t0)		#Armazena posicao x
 addi t0, t0, 4		#Proxima posicao
 sw a2, 0(t0)		#Armazena posicao y
-addi s10, s10, 12
+addi s10, s10, 16
 ret
 
 
+###################### ADD_ZOMBIE ###############################
+#	ARGUMENTOS:						#
+#		a1 = posicao x					#
+#		a2 = posicao y					#
+#								#
+#								#
+#################################################################
+ADD_ZOMBIE:
+la t0, QUEUE_ENEMIES 
+add t0, t0, s10		#soma posicao s10 como a ultima posicao da queue, para colocar proximo enemy no final da queue
+addi t0, t0, 4		#Proxima posicao
+sw zero, 0(t0)		#Stance primario ghost = 0
+addi t0, t0, 4		#Proxima posicao
+li t1, ZOMBIE_HP
+sw t1, 0(t0)		#Vida ghost = 1
+addi t0, t0, 4		#Proxima posicao
+sw a1, 0(t0)		#Armazena posicao x
+addi t0, t0, 4		#Proxima posicao
+sw a2, 0(t0)		#Armazena posicao y
+addi s10, s10, 16
+ret
 
 
-
-#Determina a0, a1, a6, a7 para print do inimigo
+###################### ENEMIES ##################################
+#	RESULTADO:						#
+#		a1 = posicao x	no bitmap			#
+#		a2 = posicao y	no bitmap			#
+#		a6 = posicao x	no mapa de enemies		#
+#		a7 = posicao y	no mapa de enemies		#
+#								#
+#################################################################
+#Determina a1, a2, a6, a7 para print do inimigo
 ENEMIES:	la t0, QUEUE_ENEMIES 
 		add t0, t0, s10		#soma posicao s10 como a ultima posicao da queue
 		#Posicao y
@@ -38,15 +79,17 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		#Posicao x
 		addi t0, t0, -4		#Proxima posicao
 		lw t2, 0(t0)		#carrega x
-		
+		#Vida enemy
+		addi t0, t0, -4		#Proxima posicao
+		lw s5, 0(t0)		#carrega vida
 		#Stance do enemy
 		addi t0, t0, -4		#Proxima posicao
 		lw t5, 0(t0)		#carrega stance
 		addi t0, t0, -4		#Proxima posicao
-		addi s10, s10, -12	
+		addi s10, s10, -16	
 
 		
-		#Se esta dentro da tela do jogador
+		#------------------------------Se esta dentro da tela do jogador-----------------------------------------------------
 		#posicao mapa x(s3) <= enemy x(t2) and s3 + screen width >= t2 + enemy_width
 		blt t2, s3, NOT_IN_SCREEN
 		addi t3, s3, SCREEN_WIDTH #t3 = s3 + screen width
@@ -61,17 +104,161 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		#Calcular posicao no mapa
 		#enemy x(t2) - posicao mapa x(s3)  
 		sub a1, t2, s3
-		#enemy y(t1) - posicao mapa x(s4)  
+		#enemy y(t1) - posicao mapa y(s4)  
 		sub a2, t1, s4
 		
-		#Stance do enemy
-		j STANCE_ENEMY
+		
+		#------------------------------Se esta dentro do hitbox de ataque-----------------------------------------------------
+		#Determina altura do inimigo
+		li t0, -1
+		bge t0, t5, DEATH_ENEMY
+		
+		li t0, 38
+		bge t0, t5, GHOST_HEIGHT
+		
+		GHOST_HEIGHT:
+		la t0, GHOST_SIZE
+		lh t4, 2(t0)
+		j START_HITBOX_ENEMY 
+		
+		START_HITBOX_ENEMY :
+		la	t0, PLAYER_POS
+		lw 	t3, 0(t0)			
+		bge 	t2, t3, DIR_HITBOX	#Esta a esquerda
+		#Enemy pela esquerda
+		la 	t0, Whip_HITBOX
+		lh 	t3, 0(t0)
+		sub 	s6, t2, s3
+		ble 	s6, t3, DAMAGE_BY_ENEMY		#se pos_whip x > enemy x, not in
+		lh 	t3, 2(t0)
+		sub 	s6, t1, s4
+		ble 	t3, s6, DAMAGE_BY_ENEMY		#se pos_whip y < enemy y, not in
+		add 	s6, s6, t4
+		
+		ble 	s6, t3, DAMAGE_BY_ENEMY		#se pos_whip y  > enemy y + Height_enemy, not in
+		j DAMAGE_ENEMY
+		
+		DIR_HITBOX:
+		#Ghost peladireita
+		la 	t0, Whip_HITBOX
+		lh 	t3, 0(t0)
+		sub 	s6, t2, s3
+		ble 	t3, s6, DAMAGE_BY_ENEMY		#se pos_whip x < enemy x, not in
+		lh 	t3, 2(t0)
+		sub 	s6, t1, s4
+		ble 	t3, s6, DAMAGE_BY_ENEMY		#se pos_whip y < enemy y, not in
+		add 	s6, s6, t4
+		
+		ble 	s6, t3, STANCE_ENEMY		#se pos_whip y  > enemy y + Height_enemy, not in
+		j DAMAGE_ENEMY
+		
+		
+		
 		
 		NOT_IN_SCREEN:
 		li a1, -1
+		j DAMAGE_BY_ENEMY
 		
 		
+		DAMAGE_ENEMY:
+		#Damage
+		addi s5, s5, -1
+		beqz s5, ENEMY_DEAD
+		j DAMAGE_BY_ENEMY
 		
+		ENEMY_DEAD:
+		bge t5, zero, DEATH_INIT
+		j DEATH_ENEMY
+		
+		
+DAMAGE_BY_ENEMY:
+	#Determina altura do inimigo para t4
+	la t0, Ritcher_damaged
+	lb t4, 0(t0)
+	bne t4, zero, STANCE_ENEMY	#Se damaged, fica invulneravel 	
+		
+		li t0, 38
+		bge t0, t5, GHOST_HEIGHT2
+			
+		GHOST_HEIGHT2:
+		la t0, GHOST_SIZE
+		lh t4, 2(t0)
+		j DAMAGE_BY_ENEMY_INIT
+				
+DAMAGE_BY_ENEMY_INIT:
+	la	t0, PLAYER_POS	
+	lw 	t3, 4(t0)	
+	beq 	t3, t1, ENEMY_X_DAMAGE
+	bge 	t3, t1, ENEMY_UP_DAMAGE	#Esta encima
+	
+	#senao esta abaixo
+	#DAMAGE?
+	addi 	t0, t3, 48		#Altura Ricther
+	addi 	t0, t0, -10		#Correção maunal
+	bge 	t1, t0, STANCE_ENEMY	#NO_DAMAGE_BY_ENEMY
+	#continua	
+	j  	ENEMY_X_DAMAGE
+	
+	ENEMY_UP_DAMAGE:
+	#senao esta acima
+	#DAMAGE?
+	add 	t0, t1, t4		#Altura enemy
+	addi 	t0, t0, -10		#Correção manual
+	bge 	t3, t0, STANCE_ENEMY	#NO_DAMAGE_BY_ENEMY
+	#continua	
+	
+	ENEMY_X_DAMAGE:						
+	#Determina largura do inimigo para t4
+
+		
+		li t0, 38
+		bge t0, t5, GHOST_HEIGHT3
+			
+		GHOST_HEIGHT3:
+		la t0, GHOST_SIZE
+		lh t4, 0(t0)
+		j ENEMY_X_DAMAGE_INIT
+		
+	ENEMY_X_DAMAGE_INIT:
+	la	t0, PLAYER_POS					
+	lw 	t3, 0(t0)	
+	beq 	t3, t2, DAMAGED_BY_ENEMY_LEFT
+	bge 	t3, t2, ENEMY_RIGHT_DAMAGE	#Esta a direita		
+	#senao esta a esquerda
+	#DAMAGE?
+	addi 	t0, t3, 24		#largura Ricther
+	addi 	t0, t0, 0		#Correção maunal
+	bge 	t2, t0, STANCE_ENEMY	#NO_DAMAGE_BY_ENEMY
+	#continua	
+	j  	DAMAGED_BY_ENEMY_LEFT
+	
+	ENEMY_RIGHT_DAMAGE:
+	#senao esta a direita
+	add 	t0, t2, t4		#largura enemy
+	addi 	t0, t0, 0		#Correção manual
+	bge 	t3, t0, STANCE_ENEMY	#NO_DAMAGE_BY_ENEMY
+	
+	
+	
+DAMAGED_BY_ENEMY_RIGHT:	
+la t0, 	Ritcher_damaged
+li t4, 1
+sb t4, 0(t0)	#Ativa o ritvher_damaged para a stance			
+li t0, 	3
+fcvt.s.w fs2, t0	#lançado para direita
+li t0, 	-2
+fcvt.s.w fs3, t0	#lançado para cima										
+j STANCE_ENEMY
+
+DAMAGED_BY_ENEMY_LEFT:
+la t0, 	Ritcher_damaged
+li t4, 1
+sb t4, 0(t0)	#Ativa o ritvher_damaged para a stance	
+li t0, 	-3
+fcvt.s.w fs2, t0	#lançado para esquerda
+li t0, 	-2
+fcvt.s.w fs3, t0	#lançado para cima
+																																																
 STANCE_ENEMY:
 
 
@@ -179,6 +366,7 @@ Ghost6:
 
 
 Ghost_behaviour:	
+
 	la	t0, PLAYER_POS	
 	lw 	t3, 4(t0)	#se aproxima do y do personagem
 	li 	t4, GHOST_VELOCITY
@@ -186,33 +374,200 @@ Ghost_behaviour:
 	bge 	t3, t1, GHOST_UP	#Esta encima
 	
 	#senao esta abaixo
-	sub 	t1, t1, t4
-	j 	GHOST_X
-	GHOST_UP:
-	add	t1, t1, t4
+	sub 	t1, t1, t4	
+	j  	GHOST_X
 	
-
+	GHOST_UP:
+	#senao esta acima
+	add	t1, t1, t4
 	
 	GHOST_X:						
 	la	t0, PLAYER_POS					
 	lw 	t3, 0(t0)	#se aproxima do y do personagem
-	beq 	t3, t2, GHOST_NEXT
+	beq 	t3, t2, ENEMY_NEXT
 	bge 	t3, t2, GHOST_RIGHT	#Esta a direita
 	
 	#senao esta a esquerda
 	sub	t2, t2, t4
-	j 	GHOST_NEXT
+	j 	ENEMY_NEXT
 	GHOST_RIGHT:		
 	add 	t2, t2, t4
-	j GHOST_NEXT	
+	j ENEMY_NEXT	
 																																																												
-	GHOST_NEXT:																																																																																																																											
+	
+
+
+DEATH_INIT:
+li t5, -1
+
+DEATH_ENEMY:
+
+li t0, -5
+bge t5, t0, Death0
+li t0, -10
+bge t5, t0, Death1
+li t0, -15
+bge t5, t0, Death2
+li t0, -20
+bge t5, t0, Death3
+li t0, -25
+bge t5, t0, Death4
+li t0, -30
+bge t5, t0, Death5
+li t0, -35
+bge t5, t0, Death6
+li t0, -40
+bge t5, t0, Death7
+li t0, -45
+bge t5, t0, Death8
+li t0, -50
+bge t5, t0, Death9
+li t0, -55
+bge t5, t0, Death10
+li t0, -60
+bge t5, t0, Death11
+li t0, -65
+bge t5, t0, Death12
+li t0, -70
+bge t5, t0, Death13
+ret
+
+Death0:
+	la 	a4, Death_enemy_size
+	li	a6, 3
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT
+		
+Death1:
+	la 	a4, Death_enemy_size
+	li 	a6, 35
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT
+		
+Death2:
+	la 	a4, Death_enemy_size
+	li 	a6, 67
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT	
+		
+Death3:
+	la 	a4, Death_enemy_size
+	li 	a6, 100
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT	
+		
+Death4:
+	la 	a4, Death_enemy_size
+	li 	a6, 141
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT	
+		
+Death5:
+	la 	a4, Death_enemy_size
+	li 	a6, 175
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT
+		
+Death6:
+	la 	a4, Death_enemy_size
+	li 	a6, 207
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT	
+		
+Death7:
+	la 	a4, Death_enemy_size
+	li 	a6, 238
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT	
+		
+Death8:
+	la 	a4, Death_enemy_size
+	li 	a6, 281
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT
+		
+Death9:
+	la 	a4, Death_enemy_size
+	li 	a6, 314
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																
+		
+Death10:
+	la 	a4, Death_enemy_size
+	li 	a6, 346
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT
+		
+Death11:
+	la 	a4, Death_enemy_size
+	li 	a6, 377
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT		
+		
+		
+Death12:
+	la 	a4, Death_enemy_size
+	li 	a6, 422
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+		j  ENEMY_NEXT	
+		
+		
+Death13:
+	la 	a4, Death_enemy_size
+	li 	a6, 455
+	li 	a7, 489
+	addi 	t5, t5, -1		#move stance
+	
+	
+		#Ultima morte entao verifica a chance de dropar um coracao
+		GERAR_ALEATORIO:
+		#Guarda os registradores 
+		mv t0, a7
+		mv t3, a1
+		mv t4, a0
+		li a7, 40#RandSeed
+		ecall
+		li a1, 2	#Definir limite
+		addi a0, a0, 272#Somar valor aleatorio (n sei pq)
+		li a7, 42	#Gera o numero
+		ecall
+		mv t3, a0	#Armazena numero aleatorio (0 ou 1) em t3
+		#Retorna os valores originais dos registradores a
+		mv a7, t0
+		mv a1, t3
+		mv a0, t4
+		
+		#Se for 1:
+		li t0, 1
+		beq t3, t0, DROPA_CORACAO
+		ret																											
+	
+DROPA_CORACAO:
+li t5, -1	#Stance de coração				
+							
+													
+ENEMY_NEXT:																																																																																																																											
 	#Armazena na pilha temporaria
 	#Push()
 	addi sp, sp, -4
 	sw t1,0(sp)	#armazena y
 	addi sp, sp, -4
 	sw t2,0(sp)	#armazena x
+	addi sp, sp, -4	
+	sw s5, 0(sp)	#armazena vida
 	addi sp, sp, -4
 	sw t5,0(sp)	#armazena stance
-	ret
+	ret		
