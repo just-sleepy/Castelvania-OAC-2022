@@ -205,13 +205,27 @@ bge t0, t1, Whip10
 	addi a6, a6, 1075
 	addi a7, a7, 0
 		Whip10_J:
-		j WHIP_HITBOX	
+		la t0, Whip_HITBOX
+		sh zero, 0(t0)
+		sh zero, 2(t0)
+		ret
 		
 	
 				
-			WHIP_HITBOX:	la t0, Whip_HITBOX
-					addi t1, a1, 48
+			WHIP_HITBOX:	lb t0, 0(t4)
+					beq t0, zero, WHIP_HITBOX_DIR
+			
+					la t0, Whip_HITBOX
+					addi t1, a1,-42
 					sh t1, 0(t0)
-					addi t1, a2, 10
+					addi t1, a2, 5
 					sh t1, 2(t0)
 					ret																							
+					
+					WHIP_HITBOX_DIR:
+					la t0, Whip_HITBOX
+					addi t1, a1, 42
+					sh t1, 0(t0)
+					addi t1, a2, 5
+					sh t1, 2(t0)
+					ret	

@@ -266,7 +266,8 @@ STANCE_ENEMY:
 li a6, 0
 li a7, 0
 
-
+li t0, -1
+bge t0, t5, DEATH_ENEMY
 
 li t0, 6
 bge t0, t5, Ghost0
@@ -530,7 +531,7 @@ Death13:
 	li 	a6, 455
 	li 	a7, 489
 	addi 	t5, t5, -1		#move stance
-	
+	ret
 	
 		#Ultima morte entao verifica a chance de dropar um coracao
 		GERAR_ALEATORIO:

@@ -10,6 +10,10 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 
 
 
+#CHAR_POS:	.float 704, 648
+
+#RESPAWN_POS:	.half 704, 648	# respawn pos (x, y)
+
 
 
 
@@ -27,6 +31,12 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 
 
 # Open MAPA file	
+			#create stack
+			#addi	sp,sp,-1480
+			#save s10
+			#sw	s10,1480(sp)
+			#update s10
+			#addi	s10,sp,1480	
 			
 			la		t0, PLAYER_POS
 			flw		fs0, 0(t0)		# fs0 = char x
@@ -74,6 +84,7 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 			li a1, 450
 			li a2, 850
 			call ADD_GHOST
+
 			
 			
 MAIN_LOOP:		# O framerate de 60 fps
