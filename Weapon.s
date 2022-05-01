@@ -115,7 +115,7 @@ bge t0, t1, Whip10
 	addi a6, a6, 2481
 	addi a7, a7, 0
 		Whip1_J:
-		j WHIP_HITBOX
+		ret
 		
 	Whip2:
 	li a6, 202
@@ -175,7 +175,7 @@ bge t0, t1, Whip10
 	addi a6, a6, 959
 	addi a7, a7, 0
 		Whip7_J:
-		j WHIP_HITBOX	
+		ret	
 		
 	Whip8:
 	li a6, 904
@@ -185,7 +185,7 @@ bge t0, t1, Whip10
 	addi a6, a6, 724
 	addi a7, a7, 0
 		Whip8_J:
-		j WHIP_HITBOX	
+		ret	
 		
 	Whip9:
 	li a6, 1021
@@ -195,7 +195,7 @@ bge t0, t1, Whip10
 	addi a6, a6, 490
 	addi a7, a7, 0
 		Whip9_J:
-		j WHIP_HITBOX
+		ret
 		
 	Whip10:
 	li a6, 1138

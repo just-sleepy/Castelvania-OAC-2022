@@ -376,7 +376,7 @@ li t2, 1
 beq t1, t2, P1_ENEMIES
 
 li t2, 2
-beq t1, t2, P2_ENEMIES
+#beq t1, t2, P2_ENEMIES
 
 li t2, 3
 beq t1, t2, P3_ENEMIES
@@ -385,7 +385,7 @@ li t2, 4
 #beq t1, t2, P4_ENEMIES
 
 li t2, 5
-#beq t1, t2, P5_ENEMIES
+beq t1, t2, P5_ENEMIES
 
 li t2, 6
 #beq t1, t2, P6_ENEMIES
@@ -421,10 +421,11 @@ jr s6
 			jr s6
 			
 			
-			P2_ENEMIES:
+			P5_ENEMIES:
 			li a1, 3132
 			li a2, 347
 			call ADD_ZOMBIE
+			jr s6
 			
 			P3_ENEMIES:
 			li a1, 2800

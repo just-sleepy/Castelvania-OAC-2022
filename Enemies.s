@@ -15,7 +15,7 @@ Ritcher_damaged: 	.byte 0	#(se estiver ferido = 1, caso contrario, 0.)
 .eqv GHOST_HP			1
 
 .eqv ZOMBIE_VELOCITY		1
-.eqv ZOMBIE_HP			1
+.eqv ZOMBIE_HP			20
 
 ###################### ADD_GHOST ###############################
 #	ARGUMENTOS:						#
@@ -55,7 +55,7 @@ li t1, 39
 sw t1, 0(t0)		#Stance primario ghost = 0
 addi t0, t0, 4		#Proxima posicao
 li t1, ZOMBIE_HP
-sw t1, 0(t0)		#Vida ghost = 1
+sw t1, 0(t0)		#Vida
 addi t0, t0, 4		#Proxima posicao
 sw a1, 0(t0)		#Armazena posicao x
 addi t0, t0, 4		#Proxima posicao
@@ -174,6 +174,15 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		#Damage
 		addi s5, s5, -1
 		beqz s5, ENEMY_DEAD
+		
+		la	t0, PLAYER_POS
+		lw 	t3, 0(t0)			
+		bge 	t2, t3, DIR_HITBOX_IMPULSION	#Esta a esquerda
+		addi 	t2, t2, -3
+		j DAMAGE_BY_ENEMY
+		DIR_HITBOX_IMPULSION:
+		addi 	t2, t2, 3
+		
 		j DAMAGE_BY_ENEMY
 		
 		ENEMY_DEAD:
@@ -544,6 +553,13 @@ Zombie_behaviour:
 	j ENEMY_NEXT
 
 	ZOMBIE_ATK:
+	la	t0, PLAYER_POS					
+	lw 	t3, 0(t0)	
+	bge	t3, t2, ZOMBIE_LEFT_ATK
+	addi t2, t2, -1
+	j ENEMY_NEXT
+	ZOMBIE_LEFT_ATK:
+	addi t2, t2, 1
 	j ENEMY_NEXT
 
 DEATH_INIT:
