@@ -691,7 +691,7 @@ COLLISION_X_EFFECT:
 		li t1, 2
 		sb t1, 0(t0)
 		la t0, NEW_PLAYER_POS	#POSICAO_INICIAL=3496 x 1544
-		li t1, 3496
+		li t1, 3460
 		sw t1, 0(t0)	#x
 		li t1, 1544
 		sw t1, 4(t0)	#y

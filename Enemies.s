@@ -4,7 +4,7 @@ QUEUE_ENEMIES:	.space 644		#Espaço para 40 enemies -> 16(espaço ocupado por cada
 
 GHOST_SIZE:	.half 23, 23
 
-ZOMBIE_SIZE:	.half 23, 23
+ZOMBIE_SIZE:	.half 34, 46
 
 Death_enemy_size:	.half 32, 32
 Heart_size:		.half 17, 17		
@@ -51,6 +51,7 @@ ADD_ZOMBIE:
 la t0, QUEUE_ENEMIES 
 add t0, t0, s10		#soma posicao s10 como a ultima posicao da queue, para colocar proximo enemy no final da queue
 addi t0, t0, 4		#Proxima posicao
+li t1, 39
 sw zero, 0(t0)		#Stance primario ghost = 0
 addi t0, t0, 4		#Proxima posicao
 li t1, ZOMBIE_HP
@@ -116,11 +117,20 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		li t0, 38
 		bge t0, t5, GHOST_HEIGHT
 		
+		li t0, 50
+		bge t0, t5, ZOMBIE_HEIGHT
+		
 		GHOST_HEIGHT:
 		la t0, GHOST_SIZE
 		lh t4, 2(t0)
 		j START_HITBOX_ENEMY 
 		
+		ZOMBIE_HEIGHT:
+		la t0, ZOMBIE_SIZE
+		lh t4, 2(t0)
+		j START_HITBOX_ENEMY 
+		
+		#-----------------------------------------------------------------------
 		START_HITBOX_ENEMY :
 		la	t0, PLAYER_POS
 		lw 	t3, 0(t0)			
@@ -179,12 +189,20 @@ DAMAGE_BY_ENEMY:
 		
 		li t0, 38
 		bge t0, t5, GHOST_HEIGHT2
-			
+		
+		li t0, 50
+		bge t0, t5, ZOMBIE_HEIGHT2	
+					
 		GHOST_HEIGHT2:
 		la t0, GHOST_SIZE
 		lh t4, 2(t0)
 		j DAMAGE_BY_ENEMY_INIT
-				
+		
+		ZOMBIE_HEIGHT2:
+		la t0, ZOMBIE_SIZE
+		lh t4, 2(t0)
+		j DAMAGE_BY_ENEMY_INIT	
+								
 DAMAGE_BY_ENEMY_INIT:
 	la	t0, PLAYER_POS	
 	lw 	t3, 4(t0)	
@@ -283,6 +301,12 @@ li t0, 34
 bge t0, t5, Ghost5
 li t0, 38
 bge t0, t5, Ghost6
+
+li t0, 45
+bge t0, t5, Zombie0
+li t0, 51
+bge t0, t5, Zombie1
+
 ret		
 
 
@@ -395,7 +419,25 @@ Ghost_behaviour:
 	add 	t2, t2, t4
 	j ENEMY_NEXT	
 																																																												
-	
+
+Zombie0:
+	la 	a4, ZOMBIE_SIZE
+	addi 	a6, a6, 0
+	li 	a7,72
+	addi 	t5, t5, 1		#move stance
+		j  Zombie_behaviour
+
+Zombie1:
+	la 	a4, ZOMBIE_SIZE
+	addi 	a6, a6, 0
+	li 	a7, 72
+	addi 	t5, t5, 1		#move stance
+		j  Zombie_behaviour
+
+
+Zombie_behaviour:		
+	j ENEMY_NEXT
+
 
 
 DEATH_INIT:
@@ -557,6 +599,9 @@ Death13:
 		li t0, 1
 		beq t3, t0, DROPA_CORACAO
 		ret																											
+
+
+
 
 	
 HEART:		

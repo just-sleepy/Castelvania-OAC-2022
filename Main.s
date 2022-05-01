@@ -5,7 +5,7 @@
 .data 
 
 PLAYER_POS:	.word 450, 900	# posicao atual do player/inicial
-#PLAYER_POS:	.word 2875 , 1476	# posicao atual do player/inicial
+#PLAYER_POS:	.word 3200 , 1562	# posicao atual do player/inicial
 PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 
 
@@ -44,17 +44,12 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 
 			fcvt.s.w	fs2, zero		# fs2 = x velocity
 			fcvt.s.w	fs3, zero		# fs3 = y velocity
-			#fcvt.s.w	fs4, zero		# fs4 = jump grace timer
-			#fcvt.s.w	fs5, zero		# fs5 = varJumpTimer
-			#fcvt.s.w	fs6, zero		# fs6 = varJumpSpeed
-			#fcvt.s.w	fs7, zero		# fs7 = maxfall
-			#fcvt.s.w	fs8, zero		# fs8 = dash timer
 			
 			
 			
 			
 			li	a7, 1024
-			la	a0, Map_library
+			la	a0, Map
 			li	a1, 0
 			ecall
 			mv	s0, a0
@@ -63,6 +58,7 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 			
 			call SWITCH_FRAME
 			
+MAIN_ENEMIES:		#determina os inimigos na fase	
 			jal s6, Sector_enemies
 			
 			
@@ -291,7 +287,7 @@ sw t1, 4(t0)
 
 
 
-j MAIN_LOOP
+j MAIN_ENEMIES
 
 
 

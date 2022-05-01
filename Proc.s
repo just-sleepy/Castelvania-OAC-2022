@@ -197,6 +197,7 @@ beq t1, t2, P7
 
 li t2, 8
 beq t1, t2, P8
+ret
 
 P1:
 la a0, POS_P1_library
@@ -208,6 +209,7 @@ P2:
 la a0, POS_P2_library
 la a1, P2_Map_library
 la a2, P2_library_size
+ret
 
 P3:
 
@@ -260,7 +262,8 @@ lb t1, 0(t0)
 li t2, 1
 beq t1, t2, P1_BACK
 li t2, 3
-beq t1, t2, P1_BACK
+beq t1, t2, P3_BACK
+j NO_BACK
 
 P1_BACK:
 la t0, BACKGROUND
@@ -275,6 +278,19 @@ la a4, FILE_MAP_SIZE
 ret
 
 P3_BACK:
+la t0, BACKGROUND
+li t1, 1	#Valor 1 pois tem background	
+sb t1, 0(t0)
+
+la a0, P3_library_size				
+la a1, POS_P3_library				
+la a2, Backgorund_2_library_size					
+la a3, POS_Backgorund_2_library				
+la a4, FILE_MAP_SIZE
+ret
+
+
+NO_BACK:
 la t0, BACKGROUND
 sb zero, 0(t0)
 ret
@@ -360,10 +376,10 @@ li t2, 1
 beq t1, t2, P1_ENEMIES
 
 li t2, 2
-beq t1, t2, P2_ENEMIES
+#beq t1, t2, P2_ENEMIES
 
 li t2, 3
-#beq t1, t2, P3_ENEMIES
+beq t1, t2, P3_ENEMIES
 
 li t2, 4
 #beq t1, t2, P4_ENEMIES
@@ -379,7 +395,7 @@ li t2, 7
 
 li t2, 8
 #beq t1, t2, P8_ENEMIES
-ret
+jr s6
 
 
 			P1_ENEMIES:
@@ -405,7 +421,7 @@ ret
 			jr s6
 			
 			
-			P2_ENEMIES:
+			P3_ENEMIES:
 			li a1, 2800
 			li a2, 1519
 			call ADD_GHOST
