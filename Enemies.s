@@ -4,7 +4,7 @@ QUEUE_ENEMIES:	.space 644		#Espaço para 40 enemies -> 16(espaço ocupado por cada
 
 GHOST_SIZE:	.half 23, 23
 
-ZOMBIE_SIZE:	.half 34, 46
+ZOMBIE_SIZE:	.half 30, 46
 
 Death_enemy_size:	.half 32, 32
 Heart_size:		.half 17, 17		
@@ -52,7 +52,7 @@ la t0, QUEUE_ENEMIES
 add t0, t0, s10		#soma posicao s10 como a ultima posicao da queue, para colocar proximo enemy no final da queue
 addi t0, t0, 4		#Proxima posicao
 li t1, 39
-sw zero, 0(t0)		#Stance primario ghost = 0
+sw t1, 0(t0)		#Stance primario ghost = 0
 addi t0, t0, 4		#Proxima posicao
 li t1, ZOMBIE_HP
 sw t1, 0(t0)		#Vida ghost = 1
@@ -237,6 +237,11 @@ DAMAGE_BY_ENEMY_INIT:
 		lh t4, 0(t0)
 		j ENEMY_X_DAMAGE_INIT
 		
+		ZOMBIE_HEIGHT2:
+		la t0, ZOMBIE_SIZE
+		lh t4, 2(t0)
+		j ENEMY_X_DAMAGE_INIT
+		
 	ENEMY_X_DAMAGE_INIT:
 	la	t0, PLAYER_POS					
 	lw 	t3, 0(t0)	
@@ -302,11 +307,22 @@ bge t0, t5, Ghost5
 li t0, 38
 bge t0, t5, Ghost6
 
-li t0, 45
+li t0, 39
 bge t0, t5, Zombie0
-li t0, 51
+li t0, 45
 bge t0, t5, Zombie1
-
+li t0, 51
+bge t0, t5, Zombie2
+li t0, 57
+bge t0, t5, Zombie3
+li t0, 63
+bge t0, t5, Zombie4
+li t0, 67
+bge t0, t5, Zombie5
+li t0, 71
+bge t0, t5, Zombie6
+li t0, 72
+bge t0, t5, Zombie7
 ret		
 
 
@@ -422,23 +438,113 @@ Ghost_behaviour:
 
 Zombie0:
 	la 	a4, ZOMBIE_SIZE
-	addi 	a6, a6, 0
-	li 	a7,72
-	addi 	t5, t5, 1		#move stance
-		j  Zombie_behaviour
+	addi 	a6, a6, 227
+	li 	a7, 72
+	addi 	t5, t5, 0		#move stance
+	j  Zombie_behaviour
 
 Zombie1:
 	la 	a4, ZOMBIE_SIZE
-	addi 	a6, a6, 0
+	addi 	a6, a6, 194
 	li 	a7, 72
 	addi 	t5, t5, 1		#move stance
-		j  Zombie_behaviour
+	j  Zombie_behaviour
+	
+Zombie2:
+	la 	a4, ZOMBIE_SIZE
+	addi 	a6, a6, 160
+	li 	a7, 72
+	addi 	t5, t5, 1		#move stance
+	j  Zombie_behaviour
+	
+Zombie3:
+	la 	a4, ZOMBIE_SIZE
+	addi 	a6, a6, 126
+	li 	a7, 72
+	addi 	t5, t5, 1		#move stance
+	j   Zombie_behaviour			
 
-
-Zombie_behaviour:		
+Zombie4:
+	la 	a4, ZOMBIE_SIZE
+	addi 	a6, a6, 484
+	li 	a7, 72
+	la	t0, PLAYER_POS
+	lw 	t3, 0(t0)	
+	bge 	t2, t3, ZOMBIE_RIGHT_S	#Esta a esquerda ritcher
+	li 	a6, 93
+		ZOMBIE_RIGHT_S:
+		addi 	t5, t5, 1		#stance
+		j   Zombie_behaviour	
+Zombie5:
+	la 	a4, ZOMBIE_SIZE
+	addi 	a6, a6, 551
+	li 	a7, 72
+	la	t0, PLAYER_POS
+	lw 	t3, 0(t0)	
+	bge 	t2, t3, ZOMBIE_RIGHT_S2	#Esta a esquerda ritcher
+	li	 a6, 32
+		ZOMBIE_RIGHT_S2:
+		addi 	t5, t5, 1		#stance
+		j   Zombie_behaviour
+	
+Zombie6:
+	la 	a4, ZOMBIE_SIZE
+	addi 	a6, a6, 582
+	li 	a7, 72
+	la	t0, PLAYER_POS
+	lw 	t3, 0(t0)	
+	bge 	t2, t3, ZOMBIE_RIGHT_S3	#Esta a esquerda ritcher
+	li	 a6, 1
+		ZOMBIE_RIGHT_S3:
+		addi 	t5, t5, 1		#stance
+		j   Zombie_behaviour
+		
+Zombie7:
+	li t5, 63		#stance
+	j   Zombie5
+						
+				
+		
+Zombie_behaviour:
+	li t4, 40
+	bge t5, t4, ZOMBIE_ATK
+	
+	la	t0, PLAYER_POS					
+	lw 	t3, 0(t0)	
+	bge	t3, t2, ZOMBIE_LEFT
+	ZOMBIE_RIGHT:
+	sub t3, t2, t3
+	li t4, 100			#Distancia minima para zombie levantar do chao
+	bge t4, t3, ZOMBIE_WAKE_UP_Y
+	j ENEMY_NEXT
+	ZOMBIE_LEFT:
+	sub t3, t3, t2
+	li t4, 100			#Distancia minima para zombie levantar do chao
+	bge t4, t3, ZOMBIE_WAKE_UP_Y
+	j ENEMY_NEXT
+	
+					
+	ZOMBIE_WAKE_UP_Y:
+	la	t0, PLAYER_POS					
+	lw 	t3, 2(t0)	
+	bge	t3, t1, ZOMBIE_UP
+	ZOMBIE_DOWN:
+	sub t3, t3, t1
+	li t4, 100			#Distancia minima para zombie levantar do chao
+	bge t4, t3, ZOMBIE_WAKE_UP
+	j ENEMY_NEXT
+	ZOMBIE_UP:
+	sub t3, t1, t3
+	li t4, 100			#Distancia minima para zombie levantar do chao
+	bge t4, t3, ZOMBIE_WAKE_UP
+	j ENEMY_NEXT
+	
+	ZOMBIE_WAKE_UP:
+	addi t5, t5, 1			#Aumenta stance para levantar do chao																																																
 	j ENEMY_NEXT
 
-
+	ZOMBIE_ATK:
+	j ENEMY_NEXT
 
 DEATH_INIT:
 li t5, -1
