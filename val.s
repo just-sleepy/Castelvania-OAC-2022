@@ -37,7 +37,7 @@
 
 #-------------------Science-------------------------
 .eqv MAX_GRAV 		10
-.eqv BOOST_LIMIT 	15
+.eqv BOOST_LIMIT 	22
 .eqv JUMP_H		-4
 
 

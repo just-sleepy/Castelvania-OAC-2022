@@ -493,8 +493,6 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			ret	
 
 	HIT_FLOOR:	
-			la t0, JUMP
-			sb zero,0(t0)
 			
 			la t0, Ritcher_damaged
 			sb zero, 0(t0) #desativa stance de damaged
@@ -515,10 +513,10 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			sh t1, 4(t0)		
 			fcvt.s.w fs3, zero 
 			#Confere nova posicao
-			lh t1,0(a2)	
+			lh 		t1,0(a2)	
 			add 		t2, t2, t1
 			lbu		t1, 0(t2)
-			beqz		t1,  HIT_FLOOR_DOWN
+			beqz		t1,  HIT_FLOOR_DOWN2
 			ret	
 			
 			
@@ -526,7 +524,9 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			HIT_FLOOR_DOWN:	
 			la 		t0, ON_AIR
 			sb 		zero, 0(t0)	#Houve colisao de chao, logo, n esta mais flutuando
-			
+			la 		t0, JUMP
+			sb 		zero,0(t0)
+			HIT_FLOOR_DOWN2:
 			la t0, JUMP_BOOST_LIMIT
 			sb zero,0(t0)			#Reseta o boost do pulo				
 															
@@ -540,7 +540,7 @@ COLLISION_Y_EFFECT:	li		t3, 0			# wall = 0
 			lh t1,0(a2)
 			sub 		t2, t2, t1
 			lbu		t1, 0(t2)
-			beqz		t1,  HIT_FLOOR_DOWN
+			beqz		t1,  HIT_FLOOR_DOWN2
 			ret					
 																								
 
@@ -910,6 +910,4 @@ COLLISION_X_EFFECT:
 		sw t1, 0(t0)	#x
 		li t1, 706
 		sw t1, 4(t0)	#y
-		ret	
-																																																																																																																																																																													
-	
+		ret

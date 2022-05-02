@@ -162,6 +162,41 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		la 	t0, Whip_HITBOX
 		lh 	t3, 0(t0)
 		sub 	s6, t2, s3
+		ble 	s6, t3, HITBOX_SHURIKEN	#se pos_whip x > enemy x, not in
+		lh 	t3, 2(t0)
+		sub 	s6, t1, s4
+		ble 	t3, s6, HITBOX_SHURIKEN	#se pos_whip y < enemy y, not in
+		add 	s6, s6, t4
+		
+		ble 	s6, t3, HITBOX_SHURIKEN		#se pos_whip y  > enemy y + Height_enemy, not in
+		
+		j DAMAGE_ENEMY
+		
+		DIR_HITBOX:
+		#Ghost peladireita
+		la 	t0, Whip_HITBOX
+		lh 	t3, 0(t0)
+		sub 	s6, t2, s3
+		ble 	t3, s6, HITBOX_SHURIKEN		#se pos_whip x < enemy x, not in
+		lh 	t3, 2(t0)
+		sub 	s6, t1, s4
+		ble 	t3, s6, HITBOX_SHURIKEN		#se pos_whip y < enemy y, not in
+		add 	s6, s6, t4
+		
+		
+		ble 	s6, t3, DAMAGE_BY_ENEMY		#se pos_whip y  > enemy y + Height_enemy, not in
+		j DAMAGE_ENEMY
+
+		#-----------------------------------------------------------------------		
+		HITBOX_SHURIKEN:
+		la	t0, PLAYER_POS
+		lw 	t3, 0(t0)			
+		bge 	t2, t3, DIR_HITBOX2	#Esta a esquerda
+		
+		#Enemy pela esquerda
+		la 	t0, Shuriken_HITBOX
+		lh 	t3, 0(t0)
+		sub 	s6, t2, s3
 		ble 	s6, t3, DAMAGE_BY_ENEMY		#se pos_whip x > enemy x, not in
 		lh 	t3, 2(t0)
 		sub 	s6, t1, s4
@@ -171,23 +206,22 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		ble 	s6, t3, DAMAGE_BY_ENEMY		#se pos_whip y  > enemy y + Height_enemy, not in
 		j DAMAGE_ENEMY
 		
-		DIR_HITBOX:
+		DIR_HITBOX2:
 		#Ghost peladireita
-		la 	t0, Whip_HITBOX
+		la 	t0, Shuriken_HITBOX
 		lh 	t3, 0(t0)
 		sub 	s6, t2, s3
-		ble 	t3, s6, DAMAGE_BY_ENEMY		#se pos_whip x < enemy x, not in
+		ble 	s6, t3, DAMAGE_BY_ENEMY		#se pos_whip x > enemy x, not in
 		lh 	t3, 2(t0)
 		sub 	s6, t1, s4
 		ble 	t3, s6, DAMAGE_BY_ENEMY		#se pos_whip y < enemy y, not in
 		add 	s6, s6, t4
 		
-		ble 	s6, t3, STANCE_ENEMY		#se pos_whip y  > enemy y + Height_enemy, not in
+		ble 	s6, t3, DAMAGE_BY_ENEMY			#se pos_whip y  > enemy y + Height_enemy, not in
 		j DAMAGE_ENEMY
+		#-----------------------------------------------------------------------
 		
-		
-		
-		
+						
 		NOT_IN_SCREEN:
 		li a1, -1
 		j DAMAGE_BY_ENEMY

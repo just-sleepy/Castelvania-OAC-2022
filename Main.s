@@ -25,6 +25,7 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 # s1 = frame
 # s3 = mapa x
 # s4 = mapa y
+#s8 = shuriken queue
 #s9 = enemies queue inicial
 #s10 = enemies generator time
 #s11 = frame control
@@ -225,7 +226,7 @@ j OUT_ENEMY_LOOP
 						
 WEAPON:	la	 t0, ATTACKING
 	lb 	t1, 0(t0)
-	beqz 	t1, HUD#(nao esta atacando)
+	beqz 	t1, SHURIKEN_ATK#(nao esta atacando)
 		
 	li	a7, 1024
 	la	a0, Pocket
@@ -240,8 +241,22 @@ WEAPON:	la	 t0, ATTACKING
 	# x = player x - map x
 			
 	call PRINT	
-	
 
+	
+SHURIKEN_ATK:	
+	la	 t0, ATTACKING
+	lb 	t1, 0(t0)
+	beqz 	t1, HUD#(nao esta atacando)		
+	call 	ADD_SHURIKEN
+	li	a7, 1024
+	la	a0, Pocket
+	li	a1, 0											
+	ecall
+	call SHURIKEN
+	la a3, Pocket_size
+	la a4, SHURIKEN_size
+	mv	a5, s1
+	call PRINT
 HUD:	
 	li a7, 1024
 	la a0, Pocket
