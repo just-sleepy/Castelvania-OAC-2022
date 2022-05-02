@@ -2,7 +2,7 @@
 .data
 
 
-
+.eqv ALCANCE_SHURIKEN	10
 .text
 KEY:		
 
@@ -153,11 +153,48 @@ KEY_A:		beq t3, zero, KEY_S 	#se tecla nao esta pressionada vai para proximo
 		sb t0, 0(t1)
 
 KEY_S:		beq t4, zero, KEY_D 	#se tecla nao esta pressionada vai para proximo	
-		addi a0, a0, 0	#movimento horizontal
-		addi a1, a1, 1	#movimento vertical
-		li t2, -2
-		fcvt.s.w fs3, t2	#velocidade vertical
+		la t0, SHURIKEN_POWER
+		li t1, ALCANCE_SHURIKEN
+		sb t1, 0(t0)
 		
+		
+		la t0, PLAYER_STANCE
+		lh t1, 0(t0)
+		
+		lb t0, 0(t4)
+		beq t0, zero, SHURIKEN_DIR
+
+		la 	t0, PLAYER_POS
+		lw	t3,0(t0)
+		sub	t3, t3, s3
+		addi 	t3, t3, -48
+		la 	t0, Shuriken_HITBOX
+		sh 	t3, 0(t0)
+		
+		la 	t0, PLAYER_POS
+		lw	t4,4(t0)
+		sub	t4, t4, s4
+		addi 	t4, t4, 13
+		la 	t0, Shuriken_HITBOX
+		sh 	t4, 2(t0)
+		j SHURIKEN_DIRECTION_END
+
+		SHURIKEN_DIR:
+		la 	t0, PLAYER_POS
+		lw	t3,0(t0)
+		sub	t3, t3, s3
+		addi 	t3, t3, 30
+		la 	t0, Shuriken_HITBOX
+		sh 	t3, 0(t0)
+		
+		la 	t0, PLAYER_POS
+		lw	a2,4(t0)
+		sub	t4, t4, s4
+		addi 	t4, t4, 13
+		la 	t0, Shuriken_HITBOX
+		sh 	t4, 2(t0)
+		
+		SHURIKEN_DIRECTION_END:
 		
 
 KEY_D:		beq t5, zero, KEY_F 	#se tecla nao esta pressionada vai para proximo	

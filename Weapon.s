@@ -1,50 +1,28 @@
 .data
-W:		.space 3	
-QUEUE_SHURIKEN:	.space 80		
+	
+		
 
 WHIP: 			.byte 0 #(0 = chicote n ativado, 1 = ativafo)
 WHIP_size:		.half 48, 10
 Whip_HITBOX:		.half 0, 0
 
-SHURIKEN_POWER: 	.byte 0 #(0 = churiken n ativado, 1 = ativo)
-SHURIKEN_size:		.half 21, 57
+SHURIKEN_POWER: 	.byte 0 #(0 = churiken n ativado, 1>  ativo, também determina o alcance)
+SHURIKEN_size:		.half 16, 16
 Shuriken_HITBOX:	.half 0, 0
+
 .text
-.eqv ALCANCE_SHURIKEN	100
-###################### ADD_SHURIKEN ###############################
-#	ARGUMENTOS:						#
-#		a1 = posicao x					#
-#		a2 = posicao y					#
-#								#
-#								#
-#################################################################
-ADD_SHURIKEN:
-la t0, QUEUE_SHURIKEN 
-add t0, t0, s8		#soma posicao s10 como a ultima posicao da queue, para colocar proximo enemy no final da queue
-addi t0, t0, 4		#Proxima posicao
-li t1, ALCANCE_SHURIKEN
-sw t1, 0(t0)		#alcance
-addi t0, t0, 4		#Proxima posicao
-sw a1, 0(t0)		#Armazena posicao x
-addi t0, t0, 4		#Proxima posicao
-sw a2, 0(t0)		#Armazena posicao y
-addi s8, s8, 12
-ret
 
 
 
-SHURIKEN:	mv t6, sp
-		la t0, QUEUE_SHURIKEN 
-		add t0, t0, s8	#soma posicao s10 como a ultima posicao da queue
+SHURIKEN_T:	la t0, Shuriken_HITBOX
 		#Posicao y
-		lw t1, 0(t0)		#carrega y
+		lw t1, 2(t0)		#carrega y
 		#Posicao x
-		addi t0, t0, -4		#Proxima posicao
 		lw t2, 0(t0)		#carrega x
-		addi t0, t0, -4		#Proxima posicao
-		lw t5, 0(t0)		#carrega alcance
-		addi t0, t0, -4		#Proxima posicao
-		addi s10, s10, -8	
+		
+		la t0, SHURIKEN_POWER
+		#Alncace
+		lb t5, 0(t0)
 		
 		#------------------------------Se esta dentro da tela do jogador-----------------------------------------------------
 		#posicao mapa x(s3) <= enemy x(t2) and s3 + screen width >= t2 + enemy_width
@@ -63,25 +41,25 @@ SHURIKEN:	mv t6, sp
 		sub a1, t2, s3
 		#enemy y(t1) - posicao mapa y(s4)  
 		sub a2, t1, s4	
-		SHURIKEN_COLLISION:
+		j SHURIKEN_COLLISION
 		#---------------------------------------------------------------------------------------------------------------
 		NOT_IN_SCREEN2:
-		li a1, -1
-
+		li a1, 100
+		li a2, 100
 		
 		SHURIKEN_COLLISION:
 		la t0, PLAYER_POS
 		lb t3, 0(t0)
 		bge t2, t3, SHURIKEN_DIR
-		addi t2, t2, -1	#Shuriken indo para esquerda
+		addi t2, t2, -5	#Shuriken indo para esquerda
 		j SPRITE_SHURIKEN
 		
 		SHURIKEN_DIR:
 		addi t2, t2, 5	#Shuriken indo para direita
 		
 		SPRITE_SHURIKEN:
-		li a6, 150
-		li a7, 210
+		li a6, 21
+		li a7, 157
 		
 		addi t5, t5, -1 	#diminue alcance
 		beqz t5, FIM_SHURIKEN2	#Acabou o alcance do shuriken	
@@ -89,29 +67,7 @@ SHURIKEN:	mv t6, sp
 		la t0, Shuriken_HITBOX
 		sh t2, 0(t0)
 		sh t1, 2(t0)
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																			
-		#Armazena na pilha temporaria
-		#Push()
-		addi sp, sp, -4
-		sw t1,0(sp)	#armazena y
-		addi sp, sp, -4
-		sw t2,0(sp)	#armazena x
-		addi sp, sp, -4	
-		sw t5,0(sp)	#armazena alcance
-		
-		OUT_SHURIKEN_LOOP:																											
-		#Restaura s10
-		beq t6, sp, FIM_SHURIKEN
-		la t1, QUEUE_SHURIKEN
-
-		OUT_SHURIKEN_LOOP_J:
-		addi 	s10, s10, 4		#Proxima posicao
-		add t1, t1, s10
-	
-		lw	t0, 0(sp)	#armazena 
-		addi 	sp, sp, 4
-		sw 	t0, 0(t1)
-		j OUT_SHURIKEN_LOOP
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
 		
 		FIM_SHURIKEN:
 		ret

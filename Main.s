@@ -54,8 +54,8 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 			li	a1, 0
 			ecall
 			mv	s0, a0
-			csrr		s11, 3073	#tempo do primeiro frame
-			li		s1, 0		#FRAME inicial
+			csrr	s11, 3073	#tempo do primeiro frame
+			li	s1, 0		#FRAME inicial
 			
 			call SWITCH_FRAME
 			
@@ -244,19 +244,24 @@ WEAPON:	la	 t0, ATTACKING
 
 	
 SHURIKEN_ATK:	
-	la	 t0, ATTACKING
+	la	 t0, SHURIKEN_POWER
 	lb 	t1, 0(t0)
-	beqz 	t1, HUD#(nao esta atacando)		
-	call 	ADD_SHURIKEN
+	beqz 	t1, HUD#(nao esta atacando)
+
 	li	a7, 1024
 	la	a0, Pocket
 	li	a1, 0											
 	ecall
-	call SHURIKEN
+	
+	call SHURIKEN_T
+	ble a1, zero, HUD #Esta fora da tela, n é necessario print
 	la a3, Pocket_size
 	la a4, SHURIKEN_size
-	mv	a5, s1
+	mv a5, s1
+	li a6, 21
+	li a7, 157
 	call PRINT
+	
 HUD:	
 	li a7, 1024
 	la a0, Pocket
