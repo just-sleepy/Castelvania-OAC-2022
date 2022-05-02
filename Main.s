@@ -225,7 +225,7 @@ j OUT_ENEMY_LOOP
 						
 WEAPON:	la	 t0, ATTACKING
 	lb 	t1, 0(t0)
-	beqz 	t1, FIM_MAIN_LOOP#(nao esta atacando)
+	beqz 	t1, HUD#(nao esta atacando)
 		
 	li	a7, 1024
 	la	a0, Pocket
@@ -239,7 +239,66 @@ WEAPON:	la	 t0, ATTACKING
 	mv	a5, s1
 	# x = player x - map x
 			
-	call PRINT																																																																		
+	call PRINT	
+	
+
+HUD:	
+	li a7, 1024
+	la a0, Pocket
+	li a1, 0											
+	ecall
+	
+	#imprime interface de vida
+	call INTERFACE_HP
+	call PRINT
+	
+	#imprime poder
+	la t3, POWER
+	lb t3, 0(t3)
+	beq t3, zero, IMPRIME_SHURIKEN
+	IMPRIME_FLASH:
+		call FLASH
+		call PRINT
+	j IMPRIME_MANA
+	IMPRIME_SHURIKEN:
+		call SHURIKEN
+		call PRINT
+	
+	#imprime mana	
+	IMPRIME_MANA:
+	la t3, MANA
+	lb t3, 0(t3)
+	li t4, 10
+	div t5, t3, t4
+	call SELECIONA_NUM
+	call PRINT
+	la t3, MANA
+	lb t3, 0(t3)
+	li t4, 10
+	div t5, t3, t4
+	mul t5, t5, t4
+	sub t5, t3, t5
+	call SELECIONA_NUM
+	addi a1, a1, 8
+	call PRINT
+
+	#imprime barra de vida
+	li s6, 0 #valor inicial pro loop
+	la t3, HP 
+	lb t3, 0(t3) #t3=HP
+	la t4, BARRA_HP_size
+	lh t4, 2(t4) #t4=altura da BARRA_HP
+	
+	IMPRIME_BARRA_HP:
+	bge s6, t3, FIM_MAIN_LOOP
+	
+	call BARRA_HP
+	mul t0, s6, t4
+	add a2, a2, t0
+	call PRINT
+	
+	addi s6, s6, 1
+	j IMPRIME_BARRA_HP																																																																																																																																																																																																																																																																				
 																					
 FIM_MAIN_LOOP:		
 csrr		t0, 3073		# t0 = tempo atual
@@ -303,3 +362,4 @@ ecall
 .include "Keyboard.s"
 .include "Pure_science.s"
 .include "Weapon.s"
+.include "Interface.s"

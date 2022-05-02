@@ -1,6 +1,6 @@
 .data
 Q:		.space 3	
-QUEUE_ENEMIES:	.space 644		#Espaço para 40 enemies -> 16(espaço ocupado por cada um) x 40 = 640
+QUEUE_ENEMIES:	.space 804		#Espaço para 40 enemies -> 20(espaço ocupado por cada um) x 40 = 640
 
 GHOST_SIZE:	.half 23, 23
 
@@ -33,10 +33,12 @@ addi t0, t0, 4		#Proxima posicao
 li t1, GHOST_HP
 sw t1, 0(t0)		#Vida ghost = 1
 addi t0, t0, 4		#Proxima posicao
+sw a1, 0(t0)		#Armazena posicao x fixa para movimentação
+addi t0, t0, 4		#Proxima posicao
 sw a1, 0(t0)		#Armazena posicao x
 addi t0, t0, 4		#Proxima posicao
 sw a2, 0(t0)		#Armazena posicao y
-addi s10, s10, 16
+addi s10, s10, 20
 ret
 
 
@@ -57,10 +59,12 @@ addi t0, t0, 4		#Proxima posicao
 li t1, ZOMBIE_HP
 sw t1, 0(t0)		#Vida
 addi t0, t0, 4		#Proxima posicao
+sw a1, 0(t0)		#Armazena posicao x fixa para movimentação
+addi t0, t0, 4		#Proxima posicao
 sw a1, 0(t0)		#Armazena posicao x
 addi t0, t0, 4		#Proxima posicao
 sw a2, 0(t0)		#Armazena posicao y
-addi s10, s10, 16
+addi s10, s10, 20
 ret
 
 
@@ -80,6 +84,9 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		#Posicao x
 		addi t0, t0, -4		#Proxima posicao
 		lw t2, 0(t0)		#carrega x
+		#Posicao fixa de x
+		addi t0, t0, -4		#Proxima posicao
+		lw s7, 0(t0)		#carrega x
 		#Vida enemy
 		addi t0, t0, -4		#Proxima posicao
 		lw s5, 0(t0)		#carrega vida
@@ -87,7 +94,7 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		addi t0, t0, -4		#Proxima posicao
 		lw t5, 0(t0)		#carrega stance
 		addi t0, t0, -4		#Proxima posicao
-		addi s10, s10, -16	
+		addi s10, s10, -20	
 
 		
 		#------------------------------Se esta dentro da tela do jogador-----------------------------------------------------
@@ -111,14 +118,20 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		
 		#------------------------------Se esta dentro do hitbox de ataque-----------------------------------------------------
 		#Determina altura do inimigo
-		li t0, -1
-		bge t0, t5, DEATH_ENEMY
+		
 		
 		li t0, 38
 		bge t0, t5, GHOST_HEIGHT
 		
 		li t0, 50
 		bge t0, t5, ZOMBIE_HEIGHT
+		
+		li t0, -72
+		bge t5, t0, DEATH_HEIGHT
+		
+		li t0, -73
+		bge t5, t0, HEART_HEIGHT
+		
 		
 		GHOST_HEIGHT:
 		la t0, GHOST_SIZE
@@ -127,6 +140,16 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		
 		ZOMBIE_HEIGHT:
 		la t0, ZOMBIE_SIZE
+		lh t4, 2(t0)
+		j START_HITBOX_ENEMY 
+		
+		DEATH_HEIGHT:
+		la t0, Death_enemy_size
+		lh t4, 2(t0)
+		j START_HITBOX_ENEMY 
+		
+		HEART_HEIGHT:
+		la t0, Heart_size
 		lh t4, 2(t0)
 		j START_HITBOX_ENEMY 
 		
@@ -171,6 +194,10 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		
 		
 		DAMAGE_ENEMY:
+		li t0, -73
+		beq t0, t5, DAMAGE_BY_ENEMY
+		li t0, -1
+		bge t0, t5, DEATH_ENEMY
 		#Damage
 		addi s5, s5, -1
 		beqz s5, ENEMY_DEAD
@@ -191,6 +218,10 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		
 		
 DAMAGE_BY_ENEMY:
+	li t0, -73
+	beq t0, t5, HEART_HEIGHT2
+	li t0, -1
+	#bge t0, t5, DEATH_ENEMY
 	#Determina altura do inimigo para t4
 	la t0, Ritcher_damaged
 	lb t4, 0(t0)
@@ -209,6 +240,11 @@ DAMAGE_BY_ENEMY:
 		
 		ZOMBIE_HEIGHT2:
 		la t0, ZOMBIE_SIZE
+		lh t4, 2(t0)
+		j DAMAGE_BY_ENEMY_INIT	
+		
+		HEART_HEIGHT2:
+		la t0, Heart_size
 		lh t4, 2(t0)
 		j DAMAGE_BY_ENEMY_INIT	
 								
@@ -236,7 +272,8 @@ DAMAGE_BY_ENEMY_INIT:
 	
 	ENEMY_X_DAMAGE:						
 	#Determina largura do inimigo para t4
-
+		li t0, -73
+		beq t0, t5, HEART_HEIGHT3
 		
 		li t0, 38
 		bge t0, t5, GHOST_HEIGHT3
@@ -248,10 +285,17 @@ DAMAGE_BY_ENEMY_INIT:
 		
 		ZOMBIE_HEIGHT2:
 		la t0, ZOMBIE_SIZE
-		lh t4, 2(t0)
+		lh t4, 0(t0)
 		j ENEMY_X_DAMAGE_INIT
 		
+		HEART_HEIGHT3:
+		la t0, Heart_size
+		lh t4, 0(t0)
+		j ENEMY_X_DAMAGE_INIT
+					
+		
 	ENEMY_X_DAMAGE_INIT:
+	
 	la	t0, PLAYER_POS					
 	lw 	t3, 0(t0)	
 	beq 	t3, t2, DAMAGED_BY_ENEMY_LEFT
@@ -273,6 +317,16 @@ DAMAGE_BY_ENEMY_INIT:
 	
 	
 DAMAGED_BY_ENEMY_RIGHT:	
+li t0, -71
+beq t0, t5, HEART_COLLECT
+li t4, -1
+bge t4, t5, DEATH_ENEMY
+	
+la 	t0, HP
+lb 	t3, 0(t0)	
+addi 	t3, t3, -1
+sb 	t3, 0(t0)	#Pega o valor de HP e diminue em 1
+
 la t0, 	Ritcher_damaged
 li t4, 1
 sb t4, 0(t0)	#Ativa o ritvher_damaged para a stance			
@@ -283,6 +337,16 @@ fcvt.s.w fs3, t0	#lançado para cima
 j STANCE_ENEMY
 
 DAMAGED_BY_ENEMY_LEFT:
+li t0, -71
+beq t0, t5, HEART_COLLECT
+li t4, -1
+bge t4, t5, DEATH_ENEMY
+
+la 	t0, HP
+lb 	t3, 0(t0)	
+addi 	t3, t3, -1
+sb 	t3, 0(t0)	#Pega o valor de HP e diminue em 1
+
 la t0, 	Ritcher_damaged
 li t4, 1
 sb t4, 0(t0)	#Ativa o ritvher_damaged para a stance	
@@ -556,12 +620,41 @@ Zombie_behaviour:
 	la	t0, PLAYER_POS					
 	lw 	t3, 0(t0)	
 	bge	t3, t2, ZOMBIE_LEFT_ATK
-	addi t2, t2, -1
+	
+	sub t0, s7, t2			#Posicao inicial - posicao fina
+	li t4, 300			#Distancia maxima da posicao inicial
+	ble t4, t0, ENEMY_NEXT	
+	sub t3, t2, t3
+	li t4, 120			#Distancia minima para zombie andar para tras
+	bge t4, t3, ZOMBIE_ATKX
+	li t4, 150			#Distancia maxima para zombie andar para tras
+	bge t3, t4, ENEMY_NEXT
+	
+	
+	
+	addi 	t2, t2, 1
 	j ENEMY_NEXT
-	ZOMBIE_LEFT_ATK:
-	addi t2, t2, 1
+	ZOMBIE_ATKX:
+	addi 	t2, t2, -1
 	j ENEMY_NEXT
+	
 
+	ZOMBIE_LEFT_ATK:
+	sub t0, t2, s7			#Posicao inicial - posicao final
+	li t4, 300			#Distancia maxima da posicao inicial
+	ble t4, t0, ENEMY_NEXT	
+	sub t3, t3, t2
+	li t4, 120			#Distancia minima para zombie andar para tras
+	bge t4, t3, ZOMBIE_ATKX2
+	li t4, 150			#Distancia maxima para zombie andar para tras
+	bge t3, t4, ENEMY_NEXT
+	
+	addi 	t2, t2, -1
+	j ENEMY_NEXT
+	ZOMBIE_ATKX2:
+	addi 	t2, t2, 1
+	j ENEMY_NEXT
+	
 DEATH_INIT:
 li t5, -1
 
@@ -723,8 +816,22 @@ Death13:
 		ret																											
 
 
-
-
+HEART_COLLECT:
+	la 	t0, MANA	#Aumenta mana 
+	lb	t1, 0(t0) 
+	li	t2, 15	#maximo
+	beq	t1, t2, NO_MORE_MANA
+	addi 	t1, t1, 4
+	NO_MORE_MANA:
+	sb 	t1, 0(t0)
+	
+	la 	t0, HP	#Aumenta vida
+	lb	t1, 0(t0)
+	li	t2, 15	#maximo
+	beq	t1, t2, NO_MORE_HP
+	addi 	t1, t1, 1
+	NO_MORE_HP:	
+	sb 	t1, 0(t0)
 	
 HEART:		
 	la 	a4, Heart_size
@@ -745,6 +852,8 @@ ENEMY_NEXT:
 	sw t1,0(sp)	#armazena y
 	addi sp, sp, -4
 	sw t2,0(sp)	#armazena x
+	addi sp, sp, -4	
+	sw s7,0(sp)	#armazena fixo de x
 	addi sp, sp, -4	
 	sw s5, 0(sp)	#armazena vida
 	addi sp, sp, -4
