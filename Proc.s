@@ -413,11 +413,11 @@ jr s6
 			
 			li a1, 600
 			li a2, 450
-			#call ADD_GHOST
+			call ADD_GHOST
 			
 			li a1, 450
 			li a2, 850
-			#call ADD_GHOST
+			call ADD_GHOST
 			jr s6
 			
 			

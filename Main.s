@@ -25,8 +25,7 @@ PLAYER_SIZE:	.half 30,48	#tamanho do Ritcher
 # s1 = frame
 # s3 = mapa x
 # s4 = mapa y
-#s8 = shuriken queue
-#s9 = enemies queue inicial
+
 #s10 = enemies generator time
 #s11 = frame control
 
@@ -86,6 +85,8 @@ MAIN_LOOP:		# O framerate de 60 fps
 			mul a0, a0, t1
 			NO_RUN:
 			
+			
+
 			
 			#Soma as posicoes novas da KEY
 			la t0, PLAYER_POS
@@ -183,11 +184,26 @@ ENEMY_PRINT:
 			la	a0, Enemy
 			li	a1, 0
 			ecall
+			
+			#Diminue imunity time de ritcher
+			la t0, Ritcher_IMUNITY
+			lb t3, 0(t0)
+			beqz t3, NO_IMMUNITY		#Se for igual a zero siginifica que ta sem imunidade a dano
+			addi t3, t3, -1
+			sb t3, 0(t0)
+			
+			NO_IMMUNITY:
+			
+			
 			mv t6, sp		#guarda valor 
 ENEMY_PRINT_LOOP:	beq s10, zero, OUT_ENEMY_LOOP		
 			
 			
 			call ENEMIES
+			
+			
+			
+			
 			li t0, -1
 			beq a1, t0, ENEMY_PRINT_LOOP#Se nao esta na tela, volta loop 	
 			#a1 determinado em proc
@@ -224,10 +240,14 @@ j OUT_ENEMY_LOOP
 	
 	
 						
-WEAPON:	la	 t0, ATTACKING
+WEAPON:	la	t0, ATTACKING
+	lb 	t1, 0(t0)
+	beqz 	t1, SHURIKEN_ATK#(nao esta atacando)
+	la	t0, WHIP
 	lb 	t1, 0(t0)
 	beqz 	t1, SHURIKEN_ATK#(nao esta atacando)
 		
+				
 	li	a7, 1024
 	la	a0, Pocket
 	li	a1, 0											
@@ -252,7 +272,7 @@ SHURIKEN_ATK:
 	la	a0, Pocket
 	li	a1, 0											
 	ecall
-	
+	call WEAPON_POS
 	call SHURIKEN_T
 	ble a1, zero, HUD #Esta fora da tela, n é necessario print
 	la a3, Pocket_size

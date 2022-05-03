@@ -6,23 +6,29 @@ WHIP: 			.byte 0 #(0 = chicote n ativado, 1 = ativafo)
 WHIP_size:		.half 48, 10
 Whip_HITBOX:		.half 0, 0
 
+Shuriken_HITBOX:	.word 0, 0
 SHURIKEN_POWER: 	.byte 0 #(0 = churiken n ativado, 1>  ativo, também determina o alcance)
 SHURIKEN_size:		.half 16, 16
-Shuriken_HITBOX:	.half 0, 0
+shuriken_active:	.byte 0
 
+Flash_POWER: 	.byte 0 #(0 = churiken n ativado, 1>  ativo, também determina o alcance)
+
+
+ss:			.string " "
 .text
 
 
 
 SHURIKEN_T:	la t0, Shuriken_HITBOX
 		#Posicao y
-		lw t1, 2(t0)		#carrega y
+		lw t1, 4(t0)		#carrega y
 		#Posicao x
 		lw t2, 0(t0)		#carrega x
 		
 		la t0, SHURIKEN_POWER
 		#Alncace
 		lb t5, 0(t0)
+		
 		
 		#------------------------------Se esta dentro da tela do jogador-----------------------------------------------------
 		#posicao mapa x(s3) <= enemy x(t2) and s3 + screen width >= t2 + enemy_width
@@ -41,40 +47,51 @@ SHURIKEN_T:	la t0, Shuriken_HITBOX
 		sub a1, t2, s3
 		#enemy y(t1) - posicao mapa y(s4)  
 		sub a2, t1, s4	
+		
+		
+		
 		j SHURIKEN_COLLISION
 		#---------------------------------------------------------------------------------------------------------------
 		NOT_IN_SCREEN2:
-		li a1, 100
-		li a2, 100
+		li a1, -1
 		
 		SHURIKEN_COLLISION:
-		la t0, PLAYER_POS
+		la t0, PLAYER_LOOK
 		lb t3, 0(t0)
-		bge t2, t3, SHURIKEN_DIR
-		addi t2, t2, -5	#Shuriken indo para esquerda
+		beqz t3 , SHURIKEN_DIR
+		addi t2, t2, -8	#Shuriken indo para esquerda
+		la t0, Shuriken_HITBOX
+		sw t2, 0(t0)
 		j SPRITE_SHURIKEN
 		
 		SHURIKEN_DIR:
-		addi t2, t2, 5	#Shuriken indo para direita
-		
+		addi t2, t2, 8	#Shuriken indo para direita
+		la t0, Shuriken_HITBOX
+		sw t2, 0(t0)
 		SPRITE_SHURIKEN:
 		li a6, 21
 		li a7, 157
 		
+		la t0, SHURIKEN_POWER
 		addi t5, t5, -1 	#diminue alcance
+		sb t5, 0(t0)
 		beqz t5, FIM_SHURIKEN2	#Acabou o alcance do shuriken	
 		
-		la t0, Shuriken_HITBOX
-		sh t2, 0(t0)
-		sh t1, 2(t0)
+		
+		
 																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
 		
 		FIM_SHURIKEN:
+		la t0, Shuriken_HITBOX
+		sw t1, 4(t0)
 		ret
 		
 		FIM_SHURIKEN2:
 		la t0, SHURIKEN_POWER
 		sb zero, 0(t0)
+		la t0, Shuriken_HITBOX
+		sw zero, 0(t0)
+		sw zero, 4(t0)
 		ret
 ################### WEAPON_POS #################################
 #								#
@@ -277,11 +294,16 @@ bge t0, t1, Whip10
 		la t0, Whip_HITBOX
 		sh zero, 0(t0)
 		sh zero, 2(t0)
+		
 		ret
 		
 	
 				
-			WHIP_HITBOX:	lb t0, 0(t4)
+			WHIP_HITBOX:	la t0, SHURIKEN_POWER
+					lb t1, 0(t0)
+					bnez t1, SHURIKEN_HITBOX
+			
+					lb t0, 0(t4)
 					beq t0, zero, WHIP_HITBOX_DIR
 			
 					la t0, Whip_HITBOX
@@ -298,3 +320,44 @@ bge t0, t1, Whip10
 					addi t1, a2, 5
 					sh t1, 2(t0)
 					ret	
+			
+			SHURIKEN_HITBOX: la t0, shuriken_active
+					 lb t1, 0(t0)
+					 beqz t1, END_WEAPON
+					 la t0, shuriken_active
+					 sb zero, 0(t0)
+					 la t0, PLAYER_LOOK
+					 lb t1, 0(t0)
+					 beq t1, zero, SHURIKEN_DIR2
+
+					la 	t0, PLAYER_POS
+					lw	t3,0(t0)
+					addi 	t3, t3, -30
+					la 	t0, Shuriken_HITBOX
+					sw	t3, 0(t0)
+		
+					la 	t0, PLAYER_POS
+					lw	t4,4(t0)
+					addi 	t4, t4, 10
+					la 	t0, Shuriken_HITBOX
+					sw 	t4, 4(t0)
+					j SHURIKEN_DIRECTION_END
+
+					SHURIKEN_DIR2:
+					la 	t0, PLAYER_POS
+					lw	t3,0(t0)
+					addi 	t3, t3, 30
+					la 	t0, Shuriken_HITBOX
+					sw	t3, 0(t0)
+		
+					la 	t0, PLAYER_POS
+					lw	t4,4(t0)
+					addi 	t4, t4, 10
+					la 	t0, Shuriken_HITBOX
+					sw 	t4, 4(t0)
+		
+		
+					SHURIKEN_DIRECTION_END:
+					 
+					 END_WEAPON:
+					 ret

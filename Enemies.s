@@ -9,7 +9,11 @@ ZOMBIE_SIZE:	.half 30, 46
 Death_enemy_size:	.half 32, 32
 Heart_size:		.half 17, 17		
 Ritcher_damaged: 	.byte 0	#(se estiver ferido = 1, caso contrario, 0.)
+Ritcher_IMUNITY:	.byte 0
+
+
 .text
+.eqv IMUNITY_TIME		15	#15 loops na main	
 
 .eqv GHOST_VELOCITY		1
 .eqv GHOST_HP			1
@@ -153,8 +157,10 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		lh t4, 2(t0)
 		j START_HITBOX_ENEMY 
 		
+		
+		
 		#-----------------------------------------------------------------------
-		START_HITBOX_ENEMY :
+		START_HITBOX_ENEMY :	
 		la	t0, PLAYER_POS
 		lw 	t3, 0(t0)			
 		bge 	t2, t3, DIR_HITBOX	#Esta a esquerda
@@ -184,24 +190,29 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		add 	s6, s6, t4
 		
 		
-		ble 	s6, t3, DAMAGE_BY_ENEMY		#se pos_whip y  > enemy y + Height_enemy, not in
+		ble 	s6, t3, HITBOX_SHURIKEN		#se pos_whip y  > enemy y + Height_enemy, not in
 		j DAMAGE_ENEMY
 
 		#-----------------------------------------------------------------------		
 		HITBOX_SHURIKEN:
-		la	t0, PLAYER_POS
+		la 	t0, SHURIKEN_POWER
+		lb	t3, 0(t0)
+		beqz	t3, DAMAGE_BY_ENEMY
+		la	t0, Shuriken_HITBOX
 		lw 	t3, 0(t0)			
 		bge 	t2, t3, DIR_HITBOX2	#Esta a esquerda
 		
 		#Enemy pela esquerda
 		la 	t0, Shuriken_HITBOX
-		lh 	t3, 0(t0)
-		sub 	s6, t2, s3
+		lw 	t3, 0(t0)
+		ble 	t3, t2, DAMAGE_BY_ENEMY		#se pos_whip x > enemy x, not in
+		addi 	s6, t2, 50
 		ble 	s6, t3, DAMAGE_BY_ENEMY		#se pos_whip x > enemy x, not in
-		lh 	t3, 2(t0)
-		sub 	s6, t1, s4
-		ble 	t3, s6, DAMAGE_BY_ENEMY		#se pos_whip y < enemy y, not in
-		add 	s6, s6, t4
+		
+		lw	t3, 4(t0)
+		addi 	t3, t3, 8			#Para pos shuriken ser o meio do shuriken
+		ble 	t3, t1, DAMAGE_BY_ENEMY		#se pos_whip y < enemy y, not in
+		add 	s6, t1, t4
 		
 		ble 	s6, t3, DAMAGE_BY_ENEMY		#se pos_whip y  > enemy y + Height_enemy, not in
 		j DAMAGE_ENEMY
@@ -209,13 +220,17 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		DIR_HITBOX2:
 		#Ghost peladireita
 		la 	t0, Shuriken_HITBOX
-		lh 	t3, 0(t0)
-		sub 	s6, t2, s3
-		ble 	s6, t3, DAMAGE_BY_ENEMY		#se pos_whip x > enemy x, not in
-		lh 	t3, 2(t0)
-		sub 	s6, t1, s4
-		ble 	t3, s6, DAMAGE_BY_ENEMY		#se pos_whip y < enemy y, not in
-		add 	s6, s6, t4
+		lw	t3, 0(t0)
+		ble 	t2, t3, DAMAGE_BY_ENEMY		#se pos_whip x > enemy x, not in
+		addi 	s6, t2, -50
+		ble 	t3, s6, DAMAGE_BY_ENEMY		#se pos_whip x > enemy x, not in
+		
+		ble 	t2, t3, DAMAGE_BY_ENEMY		#se pos_whip x > enemy x, not in
+		
+		lw	t3, 4(t0)
+		addi 	t3, t3, 8			#Para pos shuriken ser o meio do shuriken		
+		ble 	t3, t1, DAMAGE_BY_ENEMY		#se pos_whip y < enemy y, not in
+		add 	s6, t1, t4
 		
 		ble 	s6, t3, DAMAGE_BY_ENEMY			#se pos_whip y  > enemy y + Height_enemy, not in
 		j DAMAGE_ENEMY
@@ -235,6 +250,10 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		#Damage
 		addi s5, s5, -1
 		beqz s5, ENEMY_DEAD
+		#la t0, Shuriken_HITBOX
+		#sw zero, 0(t0)
+		#sw zero, 4(t0)
+		
 		
 		la	t0, PLAYER_POS
 		lw 	t3, 0(t0)			
@@ -260,6 +279,9 @@ DAMAGE_BY_ENEMY:
 	la t0, Ritcher_damaged
 	lb t4, 0(t0)
 	bne t4, zero, STANCE_ENEMY	#Se damaged, fica invulneravel 	
+		
+		li t0, -73
+		beq t0, t5, HEART_HEIGHT2
 		
 		li t0, 38
 		bge t0, t5, GHOST_HEIGHT2
@@ -312,12 +334,15 @@ DAMAGE_BY_ENEMY_INIT:
 		li t0, 38
 		bge t0, t5, GHOST_HEIGHT3
 			
+		li t0, 50
+		bge t0, t5, ZOMBIE_HEIGHT3	
+			
 		GHOST_HEIGHT3:
 		la t0, GHOST_SIZE
 		lh t4, 0(t0)
 		j ENEMY_X_DAMAGE_INIT
 		
-		ZOMBIE_HEIGHT2:
+		ZOMBIE_HEIGHT3:
 		la t0, ZOMBIE_SIZE
 		lh t4, 0(t0)
 		j ENEMY_X_DAMAGE_INIT
@@ -355,7 +380,11 @@ li t0, -71
 beq t0, t5, HEART_COLLECT
 li t4, -1
 bge t4, t5, DEATH_ENEMY
-	
+
+la t0, Ritcher_IMUNITY	
+lb t3, 0(t0)
+bnez t3, STANCE_ENEMY		#NO damage pq esta imune		
+				
 la 	t0, HP
 lb 	t3, 0(t0)	
 addi 	t3, t3, -1
@@ -363,18 +392,24 @@ sb 	t3, 0(t0)	#Pega o valor de HP e diminue em 1
 
 la t0, 	Ritcher_damaged
 li t4, 1
-sb t4, 0(t0)	#Ativa o ritvher_damaged para a stance			
+sb t4, 0(t0)		#Ativa o ritvher_damaged para a stance			
 li t0, 	3
 fcvt.s.w fs2, t0	#lançado para direita
 li t0, 	-2
 fcvt.s.w fs3, t0	#lançado para cima										
-j STANCE_ENEMY
+j IMUNITY
 
 DAMAGED_BY_ENEMY_LEFT:
 li t0, -71
 beq t0, t5, HEART_COLLECT
 li t4, -1
 bge t4, t5, DEATH_ENEMY
+
+
+la t0, Ritcher_IMUNITY	
+lb t3, 0(t0)
+bnez t3, STANCE_ENEMY		#NO damage pq esta imune		
+
 
 la 	t0, HP
 lb 	t3, 0(t0)	
@@ -388,10 +423,18 @@ li t0, 	-3
 fcvt.s.w fs2, t0	#lançado para esquerda
 li t0, 	-2
 fcvt.s.w fs3, t0	#lançado para cima
-																																																
+	
+IMUNITY:
+la t0, Ritcher_IMUNITY
+lb t3, 0(t0)
+beqz t3, START_IMUNITY			#Se for igual a zero siginifica que se esta iniciando
+j STANCE_ENEMY
+																																														
+	START_IMUNITY:
+	li t3, IMUNITY_TIME	
+	sb t3, 0(t0)																																																																																														
+																																																																																																																																																																																													
 STANCE_ENEMY:
-
-
 
 li a6, 0
 li a7, 0
@@ -589,7 +632,7 @@ Zombie5:
 	la	t0, PLAYER_POS
 	lw 	t3, 0(t0)	
 	bge 	t2, t3, ZOMBIE_RIGHT_S2	#Esta a esquerda ritcher
-	li	 a6, 32
+	li	 a6, 31
 		ZOMBIE_RIGHT_S2:
 		addi 	t5, t5, 1		#stance
 		j   Zombie_behaviour
@@ -601,7 +644,7 @@ Zombie6:
 	la	t0, PLAYER_POS
 	lw 	t3, 0(t0)	
 	bge 	t2, t3, ZOMBIE_RIGHT_S3	#Esta a esquerda ritcher
-	li	 a6, 1
+	li	 a6, 0
 		ZOMBIE_RIGHT_S3:
 		addi 	t5, t5, 1		#stance
 		j   Zombie_behaviour
