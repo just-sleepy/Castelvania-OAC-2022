@@ -53,7 +53,7 @@
 
 #Enemies
 Enemy:				.string 		"./Imagens/Enemies.bin"
-Enemy_size:			.half 1064, 527	#sempre fazer x += 1(não sei o porque)
+Enemy_size:			.half 1064, 1044	#sempre fazer x += 1(não sei o porque)
 
 
 

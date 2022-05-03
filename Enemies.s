@@ -6,7 +6,7 @@ GHOST_SIZE:	.half 23, 23
 
 ZOMBIE_SIZE:	.half 30, 46
 
-KNIGHT_SIZE:	.half 30, 46
+KNIGHT_SIZE:	.half 45, 80
 
 
 Death_enemy_size:	.half 32, 32
@@ -86,7 +86,7 @@ ret
 #								#
 #								#
 #################################################################
-ADD_KIGHT:
+ADD_KNIGHT:
 la t0, QUEUE_ENEMIES 
 add t0, t0, s10		#soma posicao s10 como a ultima posicao da queue, para colocar proximo enemy no final da queue
 addi t0, t0, 4		#Proxima posicao
@@ -539,12 +539,21 @@ bge t0, t5, Zombie7
 
 
 li t0, 78
-
-
+bge t0, t5, Knight0
+li t0, 84
+bge t0, t5, Knight1
+li t0, 90
+bge t0, t5, Knight2
+li t0, 96
+bge t0, t5, Knight3
+li t0, 102
+bge t0, t5, Knight4
+li t0, 103
+bge t0, t5, Knight5
 ret		
 
 
-
+#----------------------------------------GHOST-----------------------------------------------------
 Ghost0:
 	la 	a4, GHOST_SIZE
 	addi 	a6, a6, 0
@@ -653,7 +662,7 @@ Ghost_behaviour:
 	add 	t2, t2, t4
 	j ENEMY_NEXT	
 																																																												
-
+#----------------------------------------ZOMBIE-----------------------------------------------------
 Zombie0:
 	la 	a4, ZOMBIE_SIZE
 	addi 	a6, a6, 227
@@ -770,7 +779,7 @@ Zombie_behaviour:
 	li t4, 300			#Distancia maxima da posicao inicial
 	ble t4, t0, ENEMY_NEXT	
 	sub t3, t2, t3
-	li t4, 120			#Distancia minima para zombie andar para tras
+	li t4, 130			#Distancia minima para zombie andar para tras
 	bge t4, t3, ZOMBIE_ATKX
 	li t4, 150			#Distancia maxima para zombie andar para tras
 	bge t3, t4, ENEMY_NEXT
@@ -789,7 +798,7 @@ Zombie_behaviour:
 	li t4, 300			#Distancia maxima da posicao inicial
 	ble t4, t0, ENEMY_NEXT	
 	sub t3, t3, t2
-	li t4, 120			#Distancia minima para zombie andar para tras
+	li t4, 110			#Distancia minima para zombie andar para tras
 	bge t4, t3, ZOMBIE_ATKX2
 	li t4, 150			#Distancia maxima para zombie andar para tras
 	bge t3, t4, ENEMY_NEXT
@@ -799,7 +808,153 @@ Zombie_behaviour:
 	ZOMBIE_ATKX2:
 	addi 	t2, t2, 1
 	j ENEMY_NEXT
+
 	
+#----------------------------------------KNIGHT-----------------------------------------------------
+		
+	Knight0:				
+	la 	a4, KNIGHT_SIZE
+	li  	a6, 7
+	li 	a7, 222
+	la	t0, PLAYER_POS
+	lw 	t3, 0(t0)	
+	bge 	t2, t3,  KNIGHT0_J	#Esta a esquerda ritcher
+	li	a6, 1000
+	li 	a7, 222
+		KNIGHT0_J:
+		addi 	t5, t5, 1		#stance
+		j  Knight_behaviour						
+								
+										
+	Knight1:				
+	la 	a4, KNIGHT_SIZE
+	li  	a6, 45
+	li 	a7, 222
+	la	t0, PLAYER_POS
+	lw 	t3, 0(t0)	
+	bge 	t2, t3,  KNIGHT1_J	#Esta a esquerda ritcher
+	li	a6, 960
+	li 	a7, 222
+		KNIGHT1_J:
+		addi 	t5, t5, 1		#stance
+		j  Knight_behaviour															
+														
+	Knight2:				
+	la 	a4, KNIGHT_SIZE
+	li  	a6, 85
+	li 	a7, 222
+	la	t0, PLAYER_POS
+	lw 	t3, 0(t0)	
+	bge 	t2, t3,  KNIGHT2_J	#Esta a esquerda ritcher
+	li	a6, 922
+	li 	a7, 222
+		KNIGHT2_J:
+		addi 	t5, t5, 1		#stance
+		j  Knight_behaviour																			
+																		
+	Knight3:				
+	la 	a4, KNIGHT_SIZE
+	li  	a6, 125
+	li 	a7, 222
+	la	t0, PLAYER_POS
+	lw 	t3, 0(t0)	
+	bge 	t2, t3,  KNIGHT3_J	#Esta a esquerda ritcher
+	li	a6, 882
+	li 	a7, 222
+		KNIGHT3_J:
+		addi 	t5, t5, 1		#stance
+		j  Knight_behaviour																				
+																						
+	Knight4:				
+	la 	a4, KNIGHT_SIZE
+	li  	a6, 164
+	li 	a7, 222
+	la	t0, PLAYER_POS
+	lw 	t3, 0(t0)	
+	bge 	t2, t3,  KNIGHT4_J	#Esta a esquerda ritcher
+	li	a6, 842
+	li 	a7, 222
+		KNIGHT4_J:
+		addi 	t5, t5, 1		#stance
+		j  Knight_behaviour																									
+	
+	Knight5:				
+	la 	a4, KNIGHT_SIZE
+	li  	a6, 164
+	li 	a7, 222
+	la	t0, PLAYER_POS
+	lw 	t3, 0(t0)	
+	bge 	t2, t3,  KNIGHT5_J	#Esta a esquerda ritcher
+	li	a6, 842
+	li 	a7, 222
+		KNIGHT5_J:
+		li t5, 73		#stance
+		j  Knight_behaviour	
+																																																																																																					
+	Knight_behaviour:
+	la	t0, PLAYER_POS					
+	lw 	t3, 0(t0)	
+	bge	t3, t2, KNIGHT_LEFT_ATK
+	
+	sub t0, s7, t2			#Posicao inicial - posicao fina
+	li t4, 150			#Distancia maxima da posicao inicial
+	beq t4, t0, KNIGHT_ATKZ
+	ble t4, t0, ENEMY_NEXT	
+	sub t0, t2, s7			#Posicao inicial - posicao final
+	li t4, 150			#Distancia maxima da posicao inicial
+	beq t4, t0, KNIGHT_ATKX
+	ble t4, t0, ENEMY_NEXT	
+	
+	sub t3, t2, t3
+	li t4, 110			#Distancia minima para zombie andar para tras
+	bge t4, t3, KNIGHT_ATKX
+	li t4, 150			#Distancia maxima para zombie andar para tras
+	bge t3, t4, KNIGHT_ATKZ
+	
+	KNIGHT_ATKZ:
+	
+	addi 	t2, t2, 1
+	j ENEMY_NEXT
+	KNIGHT_ATKX:
+	addi 	t2, t2, -1
+	j ENEMY_NEXT
+	
+
+	KNIGHT_LEFT_ATK:
+	sub t0, t2, s7			#Posicao inicial - posicao final
+	li t4, 150			#Distancia maxima da posicao inicial
+	beq t4, t0, KNIGHT_ATKX
+	ble t4, t0, ENEMY_NEXT	
+	sub t0, s7, t2			#Posicao inicial - posicao fina
+	li t4, 150			#Distancia maxima da posicao inicial
+	beq t4, t0, KNIGHT_ATKX2
+	ble t4, t0, ENEMY_NEXT	
+	sub t3, t3, t2
+	li t4, 110		#Distancia minima para zombie andar para tras
+	bge t4, t3, KNIGHT_ATKX2
+	li t4, 150			#Distancia maxima para zombie andar para tras
+	bge t3, t4, KNIGHT_ATKX
+	
+	addi 	t2, t2, -1
+	j ENEMY_NEXT
+	KNIGHT_ATKX2:
+	addi 	t2, t2, 1
+	j ENEMY_NEXT																				
+																														
+																																
+																																		
+																																				
+																																						
+																																								
+																																										
+																																												
+																																														
+																																																		
+			
+				
+					
+						
+								
 DEATH_INIT:
 li t5, -1
 

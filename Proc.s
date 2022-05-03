@@ -402,14 +402,19 @@ jr s6
 			li a1, 690
 			li a2, 450
 			call ADD_ZOMBIE
-
+			
+			li a1, 620
+			li a2, 648
+			call ADD_KNIGHT
+			
+			
 			li a1, 650
 			li a2, 900
 			call ADD_GHOST
 			
 			li a1, 550
 			li a2, 950
-			call ADD_ZOMBIE
+			#call ADD_ZOMBIE
 			
 			li a1, 600
 			li a2, 450
