@@ -177,13 +177,38 @@ lb t1, 0(t0)
 li t2, 1
 beq t1, t2, P1
 
+li t2, 2
+beq t1, t2, P2
+
 li t2, 3
 beq t1, t2, P3
+
+li t2, 4
+beq t1, t2, P4
+
+li t2, 5
+beq t1, t2, P5
+
+li t2, 6
+beq t1, t2, P6
+
+li t2, 7
+beq t1, t2, P7
+
+li t2, 8
+beq t1, t2, P8
+ret
 
 P1:
 la a0, POS_P1_library
 la a1, P1_Map_library
 la a2, P1_library_size
+ret
+
+P2:
+la a0, POS_P2_library
+la a1, P2_Map_library
+la a2, P2_library_size
 ret
 
 P3:
@@ -193,6 +218,35 @@ la a1, P3_Map_library
 la a2, P3_library_size
 ret
 
+P4:
+la a0, POS_P4_library
+la a1, P4_Map_library
+la a2, P4_library_size
+ret
+
+P5:
+la a0, POS_P5_library
+la a1, P5_Map_library
+la a2, P5_library_size
+ret
+
+P6:
+la a0, POS_P6_library
+la a1, P6_Map_library
+la a2, P6_library_size
+ret
+
+P7:
+la a0, POS_P7_library
+la a1, P7_Map_library
+la a2, P7_library_size
+ret
+
+P8:
+la a0, POS_P8_library
+la a1, P8_Map_library
+la a2, P8_library_size
+ret
 ################### Select background ###########################
 #	Resultado:						#
 #	la a0 = setor size					#
@@ -208,7 +262,8 @@ lb t1, 0(t0)
 li t2, 1
 beq t1, t2, P1_BACK
 li t2, 3
-beq t1, t2, P1_BACK
+beq t1, t2, P3_BACK
+j NO_BACK
 
 P1_BACK:
 la t0, BACKGROUND
@@ -223,6 +278,19 @@ la a4, FILE_MAP_SIZE
 ret
 
 P3_BACK:
+la t0, BACKGROUND
+li t1, 1	#Valor 1 pois tem background	
+sb t1, 0(t0)
+
+la a0, P3_library_size				
+la a1, POS_P3_library				
+la a2, Backgorund_2_library_size					
+la a3, POS_Backgorund_2_library				
+la a4, FILE_MAP_SIZE
+ret
+
+
+NO_BACK:
 la t0, BACKGROUND
 sb zero, 0(t0)
 ret
@@ -293,4 +361,83 @@ PREPARE_BACKGROUND:
 			ret
 
 
+################### Sector_enemies #############################
+#								#
+#		s6 = return adress jal				#
+#								#
+#################################################################
+Sector_enemies:
+li s10, 0	#reseta quantidade de enemies
 
+la t0, SETOR
+lb t1, 0(t0)
+
+li t2, 1
+beq t1, t2, P1_ENEMIES
+
+li t2, 2
+#beq t1, t2, P2_ENEMIES
+
+li t2, 3
+beq t1, t2, P3_ENEMIES
+
+li t2, 4
+#beq t1, t2, P4_ENEMIES
+
+li t2, 5
+beq t1, t2, P5_ENEMIES
+
+li t2, 6
+#beq t1, t2, P6_ENEMIES
+
+li t2, 7
+#beq t1, t2, P7_ENEMIES
+
+li t2, 8
+#beq t1, t2, P8_ENEMIES
+jr s6
+
+
+			P1_ENEMIES:
+			li a1, 690
+			li a2, 450
+			call ADD_ZOMBIE
+			
+			li a1, 620
+			li a2, 648
+			call ADD_KNIGHT
+			
+			
+			li a1, 650
+			li a2, 900
+			call ADD_GHOST
+			
+			li a1, 550
+			li a2, 950
+			#call ADD_ZOMBIE
+			
+			li a1, 600
+			li a2, 450
+			call ADD_GHOST
+			
+			li a1, 450
+			li a2, 850
+			call ADD_GHOST
+			jr s6
+			
+			
+			P5_ENEMIES:
+			li a1, 3132
+			li a2, 347
+			call ADD_ZOMBIE
+			jr s6
+			
+			P3_ENEMIES:
+			li a1, 2800
+			li a2, 1519
+			call ADD_GHOST
+
+			li a1, 2650
+			li a2, 1519
+			call ADD_GHOST
+			jr s6
