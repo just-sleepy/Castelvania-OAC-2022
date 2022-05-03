@@ -200,13 +200,14 @@ KEY_E:		beq s8, zero, KEY_F	#se tecla nao esta pressionada vai para proximo
 		la t0, ATTACKING
 		li t1, 1		#Armazena 1 em attacking simbolizando que esta atacando
 		sb t1, 0(t0)
-		
+		j END_POWERS
 		#---------------------------------------POWER FLASH-----------------------------------------		
 		POWER_FLASH_ACTIVE:
 		la t0, Flash_POWER
 		li t1, 1
 		sb t1, 0(t0)
-								
+		
+		END_POWERS:						
 																				
 KEY_ATK:
 KEY_F:		beq s6, zero, KEY_R	#se tecla nao esta pressionada vai para proximo

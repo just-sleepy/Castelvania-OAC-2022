@@ -1,17 +1,17 @@
 .data
 PLAYER_LOOK:    .byte 0 	#(0: olhando para direita, 1: olhando para esquerda)
 
-ATTACKING:	.byte 0 #(0 = not attacking, 1 = attacking)
+ATTACKING:	.byte 0 	#(0 = not attacking, 1 = attacking)
 
 PLAYER_STANCE:	.half 0
 
 MOVING:		.byte 0
 
-RUNNING:	.byte 0	#(0: andando, 1: correndo)
+RUNNING:	.byte 0		#(0: andando, 1: correndo)
 
 
 .text
-
+.eqv FLASH_DISTANCE	150
 
 STANCE:
 	la t3, PLAYER_STANCE
@@ -24,10 +24,16 @@ STANCE:
 	li a6, 0
 	li a7, 0
 	
+	#Flash
+	la t0, Flash_POWER
+	lb t2, 0(t0)
+	bne t2, zero, FLASH_STANCE	#se flash = 1 
+	
+	
 	#Damaged
 	la t0, 	Ritcher_damaged
 	lb t2, 0(t0)	#Ativa o ritcher_damaged para a stance	
-	bne t2, zero, DAMAGED	#se jump = 1 ou stance < 0
+	bne t2, zero, DAMAGED	#se damaged = 1 
 	
 	#Attack
 	la t0, ATTACKING
@@ -699,3 +705,200 @@ DAMAGED:
 	addi a7, a7, 0
 		DAMAGED_J:
 		ret
+
+FLASH_STANCE:
+li t0, 128		#Se a stance for maior ou igual a 128, inicia a stance de correr em 129
+bge t1, t0, FLASH_INIT
+li t1, 129
+sh t1, 0(t3)	
+
+FLASH_INIT:
+li t0, 136
+bge t0, t1, Flash0
+li t0, 142
+bge t0, t1, Flash1
+li t0, 156
+bge t0, t1, Flash2
+li t0, 170
+bge t0, t1, Flash3
+li t0, 186
+bge t0, t1, Flash4
+li t0, 187
+bge t0, t1, Flash5
+li t0, 203
+bge t0, t1, Flash6
+li t0, 212
+bge t0, t1, Flash7
+li t0, 213
+bge t0, t1, Flash8
+ret
+
+		Flash0:
+		li a6, 30
+		li a7, 632
+		lb t0, 0(t4)
+		beq t0, zero,Flash0_J
+		li a6, 888
+		li a7, 632
+			Flash0_J:
+			addi t1, t1, 1
+			sh t1, 0(t3)
+			ret
+			
+		Flash1:
+		li a6, 56
+		li a7, 632
+		lb t0, 0(t4)
+		beq t0, zero,Flash1_J
+		li a6, 860
+		li a7, 632
+			Flash1_J:
+			addi t1, t1, 1
+			sh t1, 0(t3)
+			ret
+			
+		Flash2:
+		li a6, 83
+		li a7, 632
+		lb t0, 0(t4)
+		beq t0, zero,Flash2_J
+		li a6, 836
+		li a7, 632
+			Flash2_J:
+			addi t1, t1, 1
+			sh t1, 0(t3)
+			
+			#Fica estatico no ar
+			fcvt.s.w   fs2, zero
+			fcvt.s.w   fs3, zero
+			ret
+			
+		Flash3:
+		li a6, 83
+		li a7, 632
+		lb t0, 0(t4)
+		beq t0, zero,Flash3_J
+		li a6, 836
+		li a7, 632
+			Flash3_J:
+			addi t1, t1, 1
+			sh t1, 0(t3)
+			
+			
+			#Fica estatico no ar
+			fcvt.s.w   fs2, zero
+			fcvt.s.w   fs3, zero
+			ret
+			
+		
+			
+		Flash4:
+		li a6, 113
+		li a7, 632
+		lb t0, 0(t4)
+		beq t0, zero,Flash4_J
+		li a6, 805
+		li a7, 632
+			Flash4_J:
+			addi t1, t1, 1
+			sh t1, 0(t3)
+			
+			
+			#Fica estatico no ar
+			fcvt.s.w   fs2, zero
+			fcvt.s.w   fs3, zero
+			ret		
+			
+		Flash5:
+		li a6, 113
+		li a7, 632
+		lb t0, 0(t4)
+		beq t0, zero,Flash5_J
+		li a6, 805
+		li a7, 632
+			Flash5_J:
+			addi t1, t1, 1
+			sh t1, 0(t3)
+			
+			
+			#Calcular futura distancia de teleport
+			la t0, PLAYER_LOOK
+			la t2, PLAYER_POS
+			lb t1, 0(t0)
+			lw t3, 0(t2)	#Posicao x
+			beqz t1, FLASH_TO_DIR
+				#Flash para esquerda
+				li t0, FLASH_DISTANCE
+				sub t3,t3 t0   #vai pra esquerda
+				j FLASH_FINAL_POS
+				
+				FLASH_TO_DIR:
+				#Flash para direita
+				li t0, FLASH_DISTANCE
+				add t3,t3 t0	#vai pra direita
+				
+				FLASH_FINAL_POS:
+				sw t3, 0(t2)
+				
+			
+			
+			#Fica estatico no ar
+			fcvt.s.w   fs2, zero
+			fcvt.s.w   fs3, zero
+			ret	
+			
+		Flash6:
+		li a6, 143
+		li a7, 632
+		lb t0, 0(t4)
+		beq t0, zero,Flash6_J
+		li a6, 775
+		li a7, 632
+			Flash6_J:
+			addi t1, t1, 1
+			sh t1, 0(t3)
+			
+			
+			#Fica estatico no ar
+			fcvt.s.w   fs2, zero
+			fcvt.s.w   fs3, zero
+			ret	
+			
+		Flash7:
+		li a6, 113
+		li a7, 632
+		lb t0, 0(t4)
+		beq t0, zero,Flash7_J
+		li a6, 805
+		li a7, 632
+			Flash7_J:
+			addi t1, t1, 1
+			sh t1, 0(t3)
+			
+			
+			
+			#Fica estatico no ar
+			fcvt.s.w   fs2, zero
+			fcvt.s.w   fs3, zero
+			ret	
+		
+		
+		Flash8:	
+		li a6, 113
+		li a7, 632
+		lb t0, 0(t4)
+		beq t0, zero,Flash8_J
+		li a6, 805
+		li a7, 632
+			Flash8_J:
+			sh zero, 0(t3)
+			
+			#Fim de flash
+			la t0, Flash_POWER
+			sb zero, 0(t0)
+			
+			
+			#Fica estatico no ar
+			fcvt.s.w   fs2, zero
+			fcvt.s.w   fs3, zero
+			ret																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	

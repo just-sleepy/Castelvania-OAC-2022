@@ -6,6 +6,9 @@ GHOST_SIZE:	.half 23, 23
 
 ZOMBIE_SIZE:	.half 30, 46
 
+KNIGHT_SIZE:	.half 30, 46
+
+
 Death_enemy_size:	.half 32, 32
 Heart_size:		.half 17, 17		
 Ritcher_damaged: 	.byte 0	#(se estiver ferido = 1, caso contrario, 0.)
@@ -20,6 +23,10 @@ Ritcher_IMUNITY:	.byte 0
 
 .eqv ZOMBIE_VELOCITY		1
 .eqv ZOMBIE_HP			20
+
+.eqv ZOMBIE_VELOCITY		1
+.eqv KNIGHT_HP			50
+
 
 ###################### ADD_GHOST ###############################
 #	ARGUMENTOS:						#
@@ -58,7 +65,7 @@ la t0, QUEUE_ENEMIES
 add t0, t0, s10		#soma posicao s10 como a ultima posicao da queue, para colocar proximo enemy no final da queue
 addi t0, t0, 4		#Proxima posicao
 li t1, 39
-sw t1, 0(t0)		#Stance primario ghost = 0
+sw t1, 0(t0)		#Stance primario = 39
 addi t0, t0, 4		#Proxima posicao
 li t1, ZOMBIE_HP
 sw t1, 0(t0)		#Vida
@@ -70,6 +77,37 @@ addi t0, t0, 4		#Proxima posicao
 sw a2, 0(t0)		#Armazena posicao y
 addi s10, s10, 20
 ret
+
+
+###################### ADD_KIGHT ###############################
+#	ARGUMENTOS:						#
+#		a1 = posicao x					#
+#		a2 = posicao y					#
+#								#
+#								#
+#################################################################
+ADD_KIGHT:
+la t0, QUEUE_ENEMIES 
+add t0, t0, s10		#soma posicao s10 como a ultima posicao da queue, para colocar proximo enemy no final da queue
+addi t0, t0, 4		#Proxima posicao
+li t1, 73
+sw t1, 0(t0)		#Stance primario = 73
+addi t0, t0, 4		#Proxima posicao
+li t1, KNIGHT_HP
+sw t1, 0(t0)		#Vida
+addi t0, t0, 4		#Proxima posicao
+sw a1, 0(t0)		#Armazena posicao x fixa para movimentação
+addi t0, t0, 4		#Proxima posicao
+sw a1, 0(t0)		#Armazena posicao x
+addi t0, t0, 4		#Proxima posicao
+sw a2, 0(t0)		#Armazena posicao y
+addi s10, s10, 20
+ret
+
+
+
+
+
 
 
 ###################### ENEMIES ##################################
@@ -121,14 +159,17 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		
 		
 		#------------------------------Se esta dentro do hitbox de ataque-----------------------------------------------------
-		#Determina altura do inimigo
+		#Determina altura do inimigo	
 		
 		
 		li t0, 38
 		bge t0, t5, GHOST_HEIGHT
 		
-		li t0, 50
+		li t0, 72
 		bge t0, t5, ZOMBIE_HEIGHT
+		
+		li t0, 120
+		bge t0, t5, KNIGHT_HEIGHT
 		
 		li t0, -72
 		bge t5, t0, DEATH_HEIGHT
@@ -144,6 +185,11 @@ ENEMIES:	la t0, QUEUE_ENEMIES
 		
 		ZOMBIE_HEIGHT:
 		la t0, ZOMBIE_SIZE
+		lh t4, 2(t0)
+		j START_HITBOX_ENEMY 
+		
+		KNIGHT_HEIGHT:
+		la t0, KNIGHT_SIZE
 		lh t4, 2(t0)
 		j START_HITBOX_ENEMY 
 		
@@ -286,8 +332,11 @@ DAMAGE_BY_ENEMY:
 		li t0, 38
 		bge t0, t5, GHOST_HEIGHT2
 		
-		li t0, 50
+		li t0, 72
 		bge t0, t5, ZOMBIE_HEIGHT2	
+		
+		li t0, 120
+		bge t0, t5, KNIGHT_HEIGHT2	
 					
 		GHOST_HEIGHT2:
 		la t0, GHOST_SIZE
@@ -296,6 +345,12 @@ DAMAGE_BY_ENEMY:
 		
 		ZOMBIE_HEIGHT2:
 		la t0, ZOMBIE_SIZE
+		lh t4, 2(t0)
+		j DAMAGE_BY_ENEMY_INIT	
+		
+		
+		KNIGHT_HEIGHT2:
+		la t0, KNIGHT_SIZE
 		lh t4, 2(t0)
 		j DAMAGE_BY_ENEMY_INIT	
 		
@@ -334,9 +389,12 @@ DAMAGE_BY_ENEMY_INIT:
 		li t0, 38
 		bge t0, t5, GHOST_HEIGHT3
 			
-		li t0, 50
+		li t0, 72
 		bge t0, t5, ZOMBIE_HEIGHT3	
-			
+		
+		li t0,120
+		bge t0, t5, KNIGHT_HEIGHT3	
+						
 		GHOST_HEIGHT3:
 		la t0, GHOST_SIZE
 		lh t4, 0(t0)
@@ -344,6 +402,11 @@ DAMAGE_BY_ENEMY_INIT:
 		
 		ZOMBIE_HEIGHT3:
 		la t0, ZOMBIE_SIZE
+		lh t4, 0(t0)
+		j ENEMY_X_DAMAGE_INIT
+		
+		KNIGHT_HEIGHT3:
+		la t0, KNIGHT_SIZE
 		lh t4, 0(t0)
 		j ENEMY_X_DAMAGE_INIT
 		
@@ -473,6 +536,11 @@ li t0, 71
 bge t0, t5, Zombie6
 li t0, 72
 bge t0, t5, Zombie7
+
+
+li t0, 78
+
+
 ret		
 
 
