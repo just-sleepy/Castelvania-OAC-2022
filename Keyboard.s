@@ -2,7 +2,7 @@
 .data
 
 
-
+.eqv ALCANCE_SHURIKEN	60
 .text
 KEY:		
 
@@ -33,7 +33,7 @@ KEY:
 KEY_END:
 		csrr		t0, 3073		# t0 = tempo atual
 		sub		t0, t0, t5		# t0 = tempo atual - ultimo frame
-		li		t1, 16			#16ms 
+		li		t1, 8			#16ms 
 		bltu		t0, t1, K
 					
 									
@@ -44,6 +44,7 @@ BUFFER_MOVEMENTS:
 		li t5, 0	#se tecla d foi pressionada(0 = False, 1 = True)
 		li s5, 0
 		li s6, 0
+		li s8, 0
 LOOP_BUFFER:	
 			
 		#se confere todas as teclas pressionadas, e sem repetir, determina qual seram ativadas	
@@ -65,6 +66,8 @@ LOOP_BUFFER:
 		beq		t0, t1, KEY_R_VERIFY
 		li		t1, 'f'
 		beq		t0, t1, KEY_F_VERIFY
+		li		t1, 'e'
+		beq		t0, t1, KEY_E_VERIFY
 		j LOOP_BUFFER
 		
     		KEY_W_VERIFY:		
@@ -89,14 +92,15 @@ LOOP_BUFFER:
 		KEY_F_VERIFY:		
 			li s6, 1
 			j LOOP_BUFFER	
-			
-
+		KEY_E_VERIFY:	
+			li s8, 1
+			j LOOP_BUFFER	
 #se soma valores que apos o call Key serao somados na posicao do personagem(movimentacao em pixels) sem fisica de velocidade inclusa
 #a0 = x
 #a1 = y	
 SELECT_KEYS:
 bne t3, zero,  STILL_MOVING
-bne t5, zero, STILL_MOVING
+bne t5, zero,  STILL_MOVING
 la t0, MOVING		#Determina q o personagem nao se move
 sb zero, 0(t0)
 
@@ -117,13 +121,19 @@ li t1, 0
 sh t1, 0(t0)
 
 STILL_MOVING:#COntinua se movendo se houver o pulo		
-						
+
+la t0, Ritcher_damaged
+lb a0, 0(t0)
+bnez a0, FINISH_KEY2	#Se damaged, fica imovel				
 li a0, 0
 li a1, 0
 
 la t0, ATTACKING
 lb t1, 0(t0)
 bnez t1, KEY_ATK	#(esta atacando) paralisa a movimentacao	
+la t0, SHURIKEN_POWER
+lb t1, 0(t0)
+#bnez t1, KEY_ATK2	#(esta atacando) paralisa a movimentacao incluindo o chicote
 
 		la t0, JUMP
 		lb t1, 0(t0)
@@ -150,14 +160,19 @@ KEY_A:		beq t3, zero, KEY_S 	#se tecla nao esta pressionada vai para proximo
 		sb t0, 0(t1)
 
 KEY_S:		beq t4, zero, KEY_D 	#se tecla nao esta pressionada vai para proximo	
-		addi a0, a0, 0	#movimento horizontal
-		addi a1, a1, 1	#movimento vertical
-		li t2, -2
-		fcvt.s.w fs3, t2	#velocidade vertical
+		la t0, POWER
+		lb t1, 0(t0)
+		beqz t1, CHANGE_TO_FLASH
+		#Change to shuriken( = 0)
+		sb zero,0(t0)
+		j KEY_D
 		
+		#Change to flash( = 1)
+		CHANGE_TO_FLASH:
+		li t1, 1
+		sb t1,0(t0)
 		
-
-KEY_D:		beq t5, zero, KEY_F 	#se tecla nao esta pressionada vai para proximo	
+KEY_D:		beq t5, zero, KEY_E	#se tecla nao esta pressionada vai para proximo	
 		addi a0, a0, 1	#movimento horizontal
 		li t2, 2
 		fcvt.s.w fs2, t2	#velocidade horizontal
@@ -167,7 +182,33 @@ KEY_D:		beq t5, zero, KEY_F 	#se tecla nao esta pressionada vai para proximo
 		
 		la t0, PLAYER_LOOK      #Olhando para a direita
 		sb zero, 0(t0)
+
+KEY_E:		beq s8, zero, KEY_F	#se tecla nao esta pressionada vai para proximo
+		la t0, POWER
+		lb t1, 0(t0)
+		bnez t1, POWER_FLASH_ACTIVE #Se diferente de 0 significa que esta habilitado somente o flash, e se for igual, significca q shuriken ta habilitado
 		
+		#---------------------------------------POWER SHURIKEN----------------------------------------		
+		la t0, SHURIKEN_POWER
+		li t1, ALCANCE_SHURIKEN
+		sb t1, 0(t0)
+		
+		la t0, shuriken_active
+		li t1, 1
+		sb t1, 0(t0)
+		
+		la t0, ATTACKING
+		li t1, 1		#Armazena 1 em attacking simbolizando que esta atacando
+		sb t1, 0(t0)
+		j END_POWERS
+		#---------------------------------------POWER FLASH-----------------------------------------		
+		POWER_FLASH_ACTIVE:
+		la t0, Flash_POWER
+		li t1, 1
+		sb t1, 0(t0)
+		
+		END_POWERS:						
+																				
 KEY_ATK:
 KEY_F:		beq s6, zero, KEY_R	#se tecla nao esta pressionada vai para proximo
 		la t0, ATTACKING
@@ -176,6 +217,8 @@ KEY_F:		beq s6, zero, KEY_R	#se tecla nao esta pressionada vai para proximo
 		la t0, WHIP
 		li t1, 1		#Armazena 1 em chaing simbolizando que esta atacando
 		sb t1, 0(t0)
+	
+	
 	
 		
 KEY_R:		beq s5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proximo
@@ -199,3 +242,7 @@ KEY_R:		beq s5, zero, FINISH_KEY 	#se tecla nao esta pressionada vai para proxim
 																																				
 FINISH_KEY:
 	ret	
+FINISH_KEY2:
+	li a0, 1
+	li a1, 1
+	ret
